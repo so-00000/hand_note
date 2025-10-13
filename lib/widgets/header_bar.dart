@@ -20,7 +20,7 @@ class HeaderBar extends StatelessWidget {
           //     fontWeight: FontWeight.w500,
           //   ),
           // ),
-          // Icon(Icons.more_vert, color: Colors.white),
+          Icon(Icons.more_vert, color: Colors.white),
         ],
       ),
     );

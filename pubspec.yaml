@@ -23,9 +23,19 @@ dependencies:
   # 📆 日付・数値フォーマット
   intl: ^0.19.0
 
+  # 🧩 状態管理（Providerパターン）
+  provider: ^6.1.2
+
+  # 💾 軽量な永続データ保存（設定値・テーマ・ユーザーデータ等）
+  shared_preferences: ^2.3.2
+
+  another_flushbar: ^1.12.30
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  # ✅ コードスタイルチェック
   flutter_lints: ^5.0.0
 
 flutter:

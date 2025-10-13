@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hand_note/widgets/bottom_tab_bar.dart';
 import '../widgets/header_bar.dart';
-import 'create_task_dark.dart';
-import 'tasks_list_dark.dart';
-import 'settings_dark.dart';
+import 'create_memo.dart';
+import 'memo_list.dart';
+import 'settings.dart';
 
 /// 全体を管理するメイン画面
+
 class MainTabScreen extends StatefulWidget {
   const MainTabScreen({super.key});
 
@@ -18,8 +19,8 @@ class _MainTabScreenState extends State<MainTabScreen> {
 
   // 各タブに対応する画面
   final List<Widget> _screens = const [
-    CreateTaskDark(),
-    TasksListDark(),
+    CreateMemo(),
+    MemoList(),
     SettingsDark(),
   ];
 
@@ -38,13 +39,9 @@ class _MainTabScreenState extends State<MainTabScreen> {
         child: Column(
           children: [
 
-            // ヘッダー呼び出し
+            // ヘッダー
             const HeaderBar(),
-
-
             Expanded(child: _screens[_selectedIndex]),
-
-            // 下部タブ呼び出し
             BottomTabBar(
               currentIndex: _selectedIndex,
               onTabSelected: _onTabTapped

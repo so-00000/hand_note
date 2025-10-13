@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 /// ステータス項目を表示する共通ウィジェット
 /// 例: Done / In Progress / To Do
-class StatusItem extends StatelessWidget {
+class StatusCard extends StatelessWidget {
   final String name;         // ステータス名
   final Color color;         // カラー（円部分）
   final VoidCallback? onTap; // タップ時の処理（任意）
   final bool isAddButton;    // 「＋」ボタン用フラグ
 
-  const StatusItem({
+  const StatusCard({
     super.key,
     required this.name,
     required this.color,
@@ -18,6 +18,9 @@ class StatusItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final theme = Theme.of(context);
+
     // ステータス追加用（+）ボタンの場合
     if (isAddButton) {
       return GestureDetector(
@@ -26,14 +29,14 @@ class StatusItem extends StatelessWidget {
           height: 56,
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFF373739),
+            color: theme.colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(10),
           ),
           child: const Center(
             child: Text(
               '+',
               style: TextStyle(
-                color: Color(0x99EBEBF5),
+                color: Colors.white,
                 fontSize: 22,
                 fontWeight: FontWeight.w500,
               ),

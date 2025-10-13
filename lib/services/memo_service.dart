@@ -1,69 +1,75 @@
+import 'package:flutter/cupertino.dart';
+import 'package:hand_note/db/dao/memo_status_dao.dart';
+
 import '../db/dao/memo_dao.dart';
-import '../db/database_helper.dart';
 import '../models/memo.dart';
 
 /// 💼 MemoService
 /// アプリ全体のメモ操作を一元管理（DAO層との橋渡し）
 ///
-/// DAO層：SQLite操作
-/// Service層：アプリロジック
-/// WidgetService層：ホーム画面ウィジェット更新
+/// - DAO層：SQLite直接操作
+/// - Service層：アプリロジック・トグルや更新日時処理
 class MemoService {
   final MemoDao _memoDao = MemoDao();
+  final MemoStatusDao _memoStatusDao = MemoStatusDao();
 
-
-  /// ✏️ 新規登録
+  /// 新規登録
   Future<int> insertMemo(Memo memo) async {
-    final id = await _memoDao.insert(memo);
-    return id;
+    try {
+      // 実行前ログ
+      debugPrint('🔹 [insertMemo] 登録開始: ${memo.toMap()}');
+
+      // 実行
+      final id = await _memoDao.insert(memo);
+
+      // 成功ログ
+      debugPrint('✅ [insertMemo] 登録成功: id=$id');
+      return id;
+
+    } catch (e, stackTrace) {
+      // 例外発生時の詳細ログ
+      debugPrint('❌ [insertMemo] 登録失敗: $e');
+      debugPrint('📄 StackTrace: $stackTrace');
+      rethrow; // ← 上位層でハンドリングできるよう再スロー
+    }
   }
 
-  /// 📜 一覧取得
+
+  /// 一覧取得（JOIN済み）
   Future<List<Memo>> fetchAllMemos() async {
-    final db = await DatabaseHelper.instance.database;
-    final result = await db.rawQuery('''
-      SELECT 
-        m.id, 
-        m.content, 
-        m.status_id,
-        m.created_at,
-        m.updated_at,
-        s.name AS status_name,
-        s.color_code AS status_color
-      FROM memos m
-      LEFT JOIN status s ON m.status_id = s.id
-      ORDER BY m.created_at DESC
-    ''');
-
-    return result.map((row) => Memo.fromJoinedMap(row)).toList();
+    return await _memoDao.fetchAll();
   }
 
-  /// 🌀 ステータスをトグル（未完了 ⇄ 完了）
-  Future<void> toggleStatus(Memo memo) async {
-    final newStatusId = (memo.statusId == 3) ? 1 : 3;
-    final updatedMemo = memo.copyWith(statusId: newStatusId);
-    await _memoDao.update(updatedMemo);
-  }
-
-  /// 🎯 任意ステータスに更新（将来の設定画面対応）
-  Future<void> updateStatus(int memoId, int newStatusId) async {
-    final memos = await _memoDao.fetchAll();
-    final target = memos.firstWhere((m) => m.id == memoId);
-    final updated = target.copyWith(statusId: newStatusId);
-    await _memoDao.update(updated);
-  }
-
-  /// 🧩 内容更新（本文変更など）
+  /// 内容更新
   Future<void> updateMemo(Memo memo) async {
+
+    // 更新日時のセット
     final updatedMemo = memo.copyWith(
-      updatedAt: DateTime.now(), // ✅ 更新日時を今にする
+      updatedAt: DateTime.now(),
     );
+
+    // 更新処理の呼び出し
     await _memoDao.update(updatedMemo);
   }
 
-  /// ❌ 削除
+  /// 削除
   Future<int> deleteMemo(int id) async {
-    final deleted = await _memoDao.delete(id);
-    return deleted;
+    return await _memoDao.delete(id);
+  }
+
+
+
+  /// メモテーブルのステータス更新処理
+  Future<void> updateStatus(
+      Memo memo,
+      int newStatusId,
+      ) async {
+
+    final updated = memo.copyWith(
+      statusId: newStatusId,
+    );
+
+    // 更新処理
+    await _memoDao.update(updated);
   }
 }

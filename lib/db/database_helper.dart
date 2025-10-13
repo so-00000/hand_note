@@ -24,7 +24,7 @@ class DatabaseHelper {
     final path = join(directory.path, filePath);
     return await openDatabase(
       path,
-      version: 9, // ✅ version up！（8 → 9）
+      version: 10, // ✅ 最新バージョン
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
@@ -34,9 +34,7 @@ class DatabaseHelper {
   // 🧩 テーブル作成
   //
   Future _createDB(Database db, int version) async {
-    // ===============================
     // 🎨 ステータステーブル
-    // ===============================
     await db.execute('''
       CREATE TABLE status (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,26 +43,22 @@ class DatabaseHelper {
       )
     ''');
 
-    // ===============================
     // 🗒️ メモテーブル
-    // ===============================
     await db.execute('''
       CREATE TABLE memos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         content TEXT NOT NULL,
         status_id INTEGER,
         created_at TEXT NOT NULL,
-        updated_at TEXT,                         -- ✅ 更新日時を追加！
+        updated_at TEXT,
         FOREIGN KEY (status_id) REFERENCES status(id)
       )
     ''');
 
-    // ===============================
-    // 🧩 初期データ登録（ステータス）
-    // ===============================
+    // 🧩 初期データ登録（固定ステータス）
     final initialStatuses = [
-      {'name': '完了', 'color_code': '01'},   // ✅ 固定
-      {'name': '未完了', 'color_code': '02'}, // ✅ 固定
+      {'name': '完了', 'color_code': '01'},
+      {'name': '未完了', 'color_code': '02'},
     ];
 
     for (final status in initialStatuses) {
@@ -73,13 +67,12 @@ class DatabaseHelper {
   }
 
   //
-  // 🔁 バージョンアップ時の再作成処理
+  // 🔁 バージョンアップ対応
   //
   Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
-    // version 9 で updated_at 対応
-    if (oldVersion < 9) {
-      await db.execute('DROP TABLE IF EXISTS status');
+    if (oldVersion < 10) {
       await db.execute('DROP TABLE IF EXISTS memos');
+      await db.execute('DROP TABLE IF EXISTS status');
       await _createDB(db, newVersion);
     }
   }
