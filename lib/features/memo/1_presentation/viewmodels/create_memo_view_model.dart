@@ -1,8 +1,8 @@
 // viewmodels/create_memo_view_model.dart
 import 'package:flutter/material.dart';
-import '../models/memo.dart';
-import '../services/memo_service.dart';
-import '../utils/snackbar_util.dart';
+import '../../2_application/memo_service.dart';
+import '../../3_domain/entities/memo.dart';
+import '../../../../core/utils/snackbar_util.dart';
 
 class CreateMemoViewModel extends ChangeNotifier {
 

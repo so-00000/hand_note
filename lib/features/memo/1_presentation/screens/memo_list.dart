@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/memo.dart';
 import '../viewmodels/memo_list_view_model.dart';
+import '../widgets/memo_card.dart';
 import '../widgets/memo_search_bar.dart';
-import '../widgets/memo_card.dart'; // ← 各行を外部Widgetに分離
-import '../widgets/status_select_modal.dart';
 
 /// 🗂 メモ一覧画面
 /// - 検索バー + メモリスト

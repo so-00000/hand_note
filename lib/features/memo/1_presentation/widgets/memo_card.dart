@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/memo.dart';
-import '../models/memo_status.dart';
+import '../../../../core/constants/status_color_mapper.dart';
+import '../../../../core/utils/date_formatter.dart';
+import '../../3_domain/entities/memo.dart';
+import '../../3_domain/entities/memo_status.dart';
 import '../viewmodels/memo_list_view_model.dart';
-import '../constants/status_color_mapper.dart';
-import '../utils/date_formatter.dart';
-import '../widgets/status_select_modal.dart';
+import 'status_select_modal.dart';
 
 /// 🪧 メモ1件分のカードUI
 /// - 本文表示・編集

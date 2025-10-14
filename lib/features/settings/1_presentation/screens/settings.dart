@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/settings_view_model.dart';
-import '../widgets/display_mode_selector.dart';
-import '../widgets/status_list_section.dart';
-import '../widgets/app_info_section.dart';
+import '../../../../core/constants/status_color_mapper.dart';
+import '../../../../core/constants/status_codes.dart';
+import '../../../../core/theme/theme_notifier.dart';
+import '../../../../core/widgets/status_item.dart';
+import '../../../memo/2_application/status_service.dart';
+import '../../../memo/3_domain/entities/memo_status.dart';
+
 
 /// ⚙️ 設定画面（ローカルDB版 / sqflite）
 ///

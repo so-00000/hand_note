@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hand_note/widgets/bottom_tab_bar.dart';
+import '../../features/memo/1_presentation/screens/create_memo.dart';
+import '../../features/memo/1_presentation/screens/memo_list.dart';
+import '../../features/settings/1_presentation/screens/settings.dart';
+import '../widgets/bottom_tab_bar.dart';
 import '../widgets/header_bar.dart';
-import 'create_memo.dart';
-import 'memo_list.dart';
-import 'settings.dart';
 
 /// 全体を管理するメイン画面
 

@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../2_application/memo_service.dart';
 import '../viewmodels/create_memo_view_model.dart';
-import '../services/memo_service.dart';
 
 class CreateMemo extends StatelessWidget {
   const CreateMemo({super.key});
