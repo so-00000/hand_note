@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hand_note/widgets/status_card.dart';
 import 'package:provider/provider.dart';
-import '../constants/status_codes.dart';
-import '../viewmodels/settings_view_model.dart';
-import '../constants/status_color_mapper.dart';
-import '../models/memo_status.dart';
+import '../core/constants/status_codes.dart';
+import '../core/constants/status_color_mapper.dart';
+import '../features/settings/1_presentation/viewmodels/settings_view_model.dart';
 import 'status_card.dart';
 
 /// 🎨 ステータス一覧セクション

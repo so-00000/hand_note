@@ -7,7 +7,7 @@ import 'core/theme/theme_notifier.dart';
 
 import 'features/memo/1_presentation/viewmodels/create_memo_view_model.dart';
 import 'features/memo/1_presentation/viewmodels/memo_list_view_model.dart';
-import 'features/settings/1_presentation/viewmodels/setting_view_model.dart';
+import 'features/settings/1_presentation/viewmodels/settings_view_model.dart';
 
 void main() {
   runApp(
