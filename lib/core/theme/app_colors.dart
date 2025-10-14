@@ -25,6 +25,12 @@ class _DarkColors {
   // アクセントカラー上（ボタン）
   final Color onPrimary = Colors.white;
 
+  // アイコン
+  final Color icon = Colors.white;
+
+  // 選択中アイコン
+  final Color selectedIcon = Color(0xFF1C1C1E);
+
   // タイトルテキスト
   final Color textTitle = Colors.white;
 
@@ -56,6 +62,12 @@ class _LightColors {
 
   // アクセントカラー上（ボタン）
   final Color onPrimary = Colors.white;
+
+  // アイコン
+  final Color icon = Colors.white;
+
+  // 選択中アイコン
+  final Color selectedIcon = Color(0xFF1C1C1E);
 
   // タイトルテキスト
   final Color textTitle = Color(0xFF3E3A3A);

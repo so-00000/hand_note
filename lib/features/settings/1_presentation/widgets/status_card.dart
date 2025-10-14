@@ -54,7 +54,7 @@ class StatusCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFF373739),
+          color: theme.colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(

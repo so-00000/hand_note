@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../core/theme/theme_notifier.dart';
-import '../features/settings/1_presentation/viewmodels/settings_view_model.dart';
+import '../../../../core/theme/theme_notifier.dart';
+import '../viewmodels/settings_view_model.dart';
 
 /// 🌓 表示モード切替セクション
 /// - Light / Dark / Auto のテーマモードを切り替える
@@ -15,13 +15,13 @@ class DisplayModeSelector extends StatelessWidget {
     final vm = context.watch<SettingsViewModel>();
     final themeNotifier = context.watch<ThemeNotifier>();
 
-    final selectedColor = theme.colorScheme.onSurface;
-    final unselectedColor = theme.colorScheme.surface;
+    final selectedColor = Colors.white;
+    final unselectedColor = theme.colorScheme.surfaceContainer;
 
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: theme.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
@@ -39,7 +39,7 @@ class DisplayModeSelector extends StatelessWidget {
             ),
             ButtonSegment(
               value: 'auto',
-              label: Text('auto'),
+              label: Text('auto', style: TextStyle(fontSize: 16),),
             ),
           ],
           selected: {vm.displayMode},
@@ -65,9 +65,14 @@ class DisplayModeSelector extends StatelessWidget {
                   ? selectedColor
                   : unselectedColor,
             ),
+            foregroundColor: WidgetStateProperty.resolveWith(
+                  (states) => states.contains(WidgetState.selected)
+                  ? theme.colorScheme.surfaceContainer // 選択中
+                  : Colors.white,                      // 非選択中
+            ),
             shape: WidgetStateProperty.all(
               RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
           ),
