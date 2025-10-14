@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:hand_note/db/dao/memo_status_dao.dart';
-
-import '../db/dao/memo_dao.dart';
-import '../models/memo.dart';
+import '../3_domain/entities/memo.dart';
+import '../4_data/dao/memo_dao.dart';
+import '../4_data/dao/memo_status_dao.dart';
 
 /// 💼 MemoService
 /// アプリ全体のメモ操作を一元管理（DAO層との橋渡し）

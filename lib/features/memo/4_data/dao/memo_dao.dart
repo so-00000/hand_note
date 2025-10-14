@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:sqflite/sqflite.dart';
-import '../database_helper.dart';
-import '../../models/memo.dart';
+import '../../../../core/db/database_helper.dart';
+import '../../3_domain/entities/memo.dart';
 
 /// ===============================
 /// 💾 MemoDao（sqflite用）

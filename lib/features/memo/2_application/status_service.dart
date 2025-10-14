@@ -1,9 +1,9 @@
-import '../db/dao/memo_status_dao.dart';
-import '../models/memo_status.dart';
-import '../constants/status_codes.dart';
+import '../3_domain/entities/memo.dart';
+import '../3_domain/entities/memo_status.dart';
+import '../4_data/dao/memo_dao.dart';
+import '../4_data/dao/memo_status_dao.dart';
 
-import '../db/dao/memo_dao.dart';
-import '../models/memo.dart';
+import '../../../core/constants/status_codes.dart';
 
 
 /// 🟢 ステータス管理サービス（sqfliteローカル版）

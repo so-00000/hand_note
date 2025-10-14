@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../constants/status_codes.dart';
-import '../models/memo_status.dart';
-import '../constants/status_color_mapper.dart';
+import '../../../../core/constants/status_color_mapper.dart';
+import '../../3_domain/entities/memo_status.dart';
 
 /// 🟣 ステータス選択モーダル
 /// - 丸いカラーアイコンを並べてステータス選択

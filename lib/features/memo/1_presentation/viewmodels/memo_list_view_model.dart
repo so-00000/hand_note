@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import '../models/memo.dart';
-import '../services/memo_service.dart';
-import '../services/status_service.dart';
-import '../utils/snackbar_util.dart';
-import 'package:flutter/material.dart';
-import '../models/memo.dart';
-import '../models/memo_status.dart';
-import '../services/status_service.dart';
-import '../services/memo_service.dart';
+import '../../2_application/memo_service.dart';
+import '../../2_application/status_service.dart';
+import '../../3_domain/entities/memo.dart';
+import '../../3_domain/entities/memo_status.dart';
+import '../../../../core/utils/snackbar_util.dart';
 
 class MemoListViewModel extends ChangeNotifier {
   final MemoService _memoService = MemoService();

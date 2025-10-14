@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'theme/theme_notifier.dart';
-import 'theme/app_themes.dart';
-import 'screens/main_tab_screen.dart';
+import 'core/screens/main_tab_screen.dart';
+import 'core/theme/app_themes.dart';
+import 'core/theme/theme_notifier.dart';
 
-import 'viewmodels/create_memo_view_model.dart';
-import 'viewmodels/memo_list_view_model.dart';
-import 'viewmodels/setting_view_model.dart';
+import 'features/memo/1_presentation/viewmodels/create_memo_view_model.dart';
+import 'features/memo/1_presentation/viewmodels/memo_list_view_model.dart';
+import 'features/settings/1_presentation/viewmodels/setting_view_model.dart';
 
 void main() {
   runApp(
