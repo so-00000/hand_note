@@ -26,12 +26,13 @@ class AppInfoSection extends StatelessWidget {
               Text(
                 'Edition : Free',
                 style: theme.textTheme.bodyLarge?.copyWith(
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               Text(
                 'ver 1.0.0 © hand_note',
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.bodySmall,
               ),
             ],
           ),
@@ -46,6 +47,7 @@ class AppInfoSection extends StatelessWidget {
               Text(
                 'Buy Now',
                 style: theme.textTheme.bodyLarge?.copyWith(
+                  fontSize: 14,
                   color: theme.colorScheme.primary,
                 ),
               ),

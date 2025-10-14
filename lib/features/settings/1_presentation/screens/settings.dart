@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../widgets/app_info_section.dart';
-import '../../../../widgets/display_mode_selector.dart';
-import '../../../../widgets/status_list_section.dart';
 import '../viewmodels/settings_view_model.dart';
+import '../widgets/app_info_section.dart';
+import '../widgets/display_mode_selector.dart';
+import '../widgets/status_list_section.dart';
 
 
 /// ⚙️ 設定画面（ローカルDB版 / sqflite）
