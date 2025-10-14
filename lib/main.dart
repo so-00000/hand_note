@@ -7,7 +7,7 @@ import 'screens/main_tab_screen.dart';
 
 import 'viewmodels/create_memo_view_model.dart';
 import 'viewmodels/memo_list_view_model.dart';
-import 'viewmodels/setting_view_model.dart';
+import 'viewmodels/settings_view_model.dart';
 
 void main() {
   runApp(
@@ -23,7 +23,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => MemoListViewModel()),
 
         // 設定画面
-        ChangeNotifierProvider(create: (_) => SettingViewModel()),
+        ChangeNotifierProvider(create: (_) => SettingsViewModel()),
       ],
       child: const MyApp(),
     ),

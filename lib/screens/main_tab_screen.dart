@@ -21,7 +21,7 @@ class _MainTabScreenState extends State<MainTabScreen> {
   final List<Widget> _screens = const [
     CreateMemo(),
     MemoList(),
-    SettingsDark(),
+    Settings(),
   ];
 
   // タブ押下時にbodyを差し替え
