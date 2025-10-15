@@ -11,42 +11,30 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # 📱 iOS風アイコン
+  # ✅ GitHubのパッケージ直指定（subdirectoryを明示）
+  home_widget:
+    git:
+      url: https://github.com/ABausG/home_widget.git
+      ref: main
+      path: packages/home_widget   # 👈 ここが超重要！
+
   cupertino_icons: ^1.0.8
-
-  # 🧱 SQLiteデータベース操作
   sqflite: ^2.3.3+1
-
-  # 📂 ファイル保存パス取得
   path_provider: ^2.1.3
-
-  # 📆 日付・数値フォーマット
   intl: ^0.19.0
-
-  # 🧩 状態管理（Providerパターン）
   provider: ^6.1.2
-
-  # 💾 軽量な永続データ保存（設定値・テーマ・ユーザーデータ等）
   shared_preferences: ^2.3.2
-
   another_flushbar: ^1.12.30
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # ✅ コードスタイルチェック
   flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true
 
-  # 必要に応じてアセットを追加
-  # assets:
-  #   - assets/images/
-  #
-  # カスタムフォントを使う場合
-  # fonts:
-  #   - family: MyFont
-  #     fonts:
-  #       - asset: fonts/MyFont-Regular.ttf
+home_widget:
+  android:
+    package_name: com.example.hand_note
+    enable_background_updates: true

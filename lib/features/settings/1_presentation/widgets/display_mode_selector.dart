@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../core/theme/theme_notifier.dart';
-import '../features/settings/1_presentation/viewmodels/settings_view_model.dart';
+import '../../../../core/theme/theme_notifier.dart';
+import '../viewmodels/settings_view_model.dart';
 
 /// 🌓 表示モード切替セクション
 /// - Light / Dark / Auto のテーマモードを切り替える

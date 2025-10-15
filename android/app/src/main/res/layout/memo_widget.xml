@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 🏠 ホームウィジェット全体 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="@android:color/transparent">
+
+    <!-- 🪧 メモカード群 -->
+    <LinearLayout
+        android:id="@+id/memo_list_container"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@drawable/divider_invisible"
+        android:showDividers="middle"
+        android:dividerPadding="8dp" />
+
+</LinearLayout>
