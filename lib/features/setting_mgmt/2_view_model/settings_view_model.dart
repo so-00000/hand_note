@@ -1,32 +1,30 @@
-// viewmodels/memo_list_view_model.dart
-
 import 'package:flutter/material.dart';
-import '../../../memo/2_application/status_service.dart';
-import '../../../memo/3_domain/entities/memo_status.dart';
+import '../../../core/model/status_model.dart';
+import '../3_model/repository/setting_mgmt_repository.dart';
 
 /// 🧭 設定画面の状態管理（ViewModel層）
 /// - ステータス一覧の取得
 /// - ステータス追加・削除
 /// - 表示モードの管理
-class SettingsViewModel extends ChangeNotifier {
-  final StatusService _statusService = StatusService();
+class SettingsVM extends ChangeNotifier {
+  final StettingMgmtRepository StettingMgmtRepo = StettingMgmtRepository();
 
   String _displayMode = 'auto';
-  List<MemoStatus> _statusList = [];
+  List<Status> _statusList = [];
 
   String get displayMode => _displayMode;
-  List<MemoStatus> get statusList => _statusList;
+  List<Status> get statusList => _statusList;
 
   /// ステータスを取得
   Future<void> loadStatuses() async {
-    _statusList = await _statusService.fetchAllStatuses();
+    _statusList = await StettingMgmtRepo.fetchAllStatuses();
     notifyListeners();
   }
 
   /// ステータス追加
-  Future<bool> addStatus(String name, String colorCode) async {
+  Future<bool> addStatus(String name, String colorCd) async {
     try {
-      await _statusService.addCustomStatus(name, colorCode);
+      await StettingMgmtRepo.insertStatus(name, colorCd);
       await loadStatuses();
       return true;
     } catch (_) {
@@ -35,9 +33,9 @@ class SettingsViewModel extends ChangeNotifier {
   }
 
   /// ステータス削除
-  Future<bool> deleteStatus(int id, String colorCode) async {
+  Future<bool> deleteStatus(int id, String colorCd) async {
     try {
-      await _statusService.deleteStatus(id);
+      await StettingMgmtRepo.deleteStatus(id);
       await loadStatuses();
       return true;
     } catch (_) {

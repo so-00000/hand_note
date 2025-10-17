@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/theme/theme_notifier.dart';
-import '../viewmodels/settings_view_model.dart';
+import '../../2_view_model/settings_view_model.dart';
 
 /// 🌓 表示モード切替セクション
 /// - Light / Dark / Auto のテーマモードを切り替える
@@ -12,7 +12,7 @@ class DisplayModeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final vm = context.watch<SettingsViewModel>();
+    final vm = context.watch<SettingsVM>();
     final themeNotifier = context.watch<ThemeNotifier>();
 
     final selectedColor = Colors.white;

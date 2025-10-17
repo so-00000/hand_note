@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/status_codes.dart';
 import '../../../../core/constants/status_color_mapper.dart';
-import '../viewmodels/settings_view_model.dart';
+import '../../2_view_model/settings_view_model.dart';
 import 'status_card.dart';
 
 /// 🎨 ステータス一覧セクション
@@ -14,13 +14,13 @@ class StatusListSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final vm = context.watch<SettingsViewModel>();
+    final vm = context.watch<SettingsVM>();
 
     return Column(
       children: [
         for (final s in vm.statusList)
           Dismissible(
-            key: Key(s.id.toString()),
+            key: Key(s.statusId.toString()),
             direction: DismissDirection.endToStart,
             background: Container(
               color: theme.colorScheme.error,
@@ -29,19 +29,19 @@ class StatusListSection extends StatelessWidget {
               child: Icon(Icons.delete, color: theme.colorScheme.onPrimary),
             ),
             confirmDismiss: (_) async {
-              if (isFixedStatus(s.colorCode)) {
+              if (isFixedStatus(s.colorCd)) {
                 _showSnack(context, '固定ステータスは削除できません');
                 return false;
               }
               return true;
             },
             onDismissed: (_) async {
-              await vm.deleteStatus(s.id ?? 0, s.colorCode);
-              _showSnack(context, '「${s.name}」を削除しました');
+              await vm.deleteStatus(s.statusId ?? 0, s.colorCd);
+              _showSnack(context, '「${s.statusNm}」を削除しました');
             },
             child: StatusCard(
-              name: s.name,
-              color: getStatusColor(s.colorCode),
+              name: s.statusNm,
+              color: getStatusColor(s.colorCd),
             ),
           ),
 
@@ -72,14 +72,14 @@ class StatusListSection extends StatelessWidget {
 
   /// ステータス追加ダイアログ
   Future<void> _showAddStatusDialog(
-      BuildContext context, SettingsViewModel vm) async {
+      BuildContext context, SettingsVM vm) async {
     final theme = Theme.of(context);
     String newName = '';
     String? selectedColorCode;
 
     // カスタムステータス数を制限
     final customCount =
-        vm.statusList.where((s) => !isFixedStatus(s.colorCode)).length;
+        vm.statusList.where((s) => !isFixedStatus(s.colorCd)).length;
     if (customCount >= 4) {
       _showSnack(context, '追加できるステータスは最大4件までです');
       return;

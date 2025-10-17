@@ -5,9 +5,9 @@ import 'core/screens/main_tab_screen.dart';
 import 'core/theme/app_themes.dart';
 import 'core/theme/theme_notifier.dart';
 
-import 'features/memo/1_presentation/viewmodels/create_memo_view_model.dart';
-import 'features/memo/1_presentation/viewmodels/memo_list_view_model.dart';
-import 'features/settings/1_presentation/viewmodels/settings_view_model.dart';
+import 'features/memo_mgmt/2_view_model/create_memo_view_model.dart';
+import 'features/memo_mgmt/2_view_model/show_memo_list_view_model.dart';
+import 'features/setting_mgmt/2_view_model/settings_view_model.dart';
 
 void main() {
   runApp(
@@ -17,13 +17,13 @@ void main() {
         ChangeNotifierProvider(create: (_) => ThemeNotifier()),
 
         // 新規作成画面
-        ChangeNotifierProvider(create: (_) => CreateMemoViewModel()),
+        ChangeNotifierProvider(create: (_) => CreateMemoVM()),
 
         // 一覧画面
-        ChangeNotifierProvider(create: (_) => MemoListViewModel()),
+        ChangeNotifierProvider(create: (_) => ShowMemoListVM()),
 
         // 設定画面
-        ChangeNotifierProvider(create: (_) => SettingsViewModel()),
+        ChangeNotifierProvider(create: (_) => SettingsVM()),
       ],
       child: const MyApp(),
     ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../features/memo/1_presentation/screens/create_memo.dart';
-import '../../features/memo/1_presentation/screens/memo_list.dart';
-import '../../features/settings/1_presentation/screens/settings.dart';
+import '../../features/memo_mgmt/1_view/create_memo.dart';
+import '../../features/memo_mgmt/1_view/show_memo_list.dart';
+import '../../features/setting_mgmt/1_view/mgmt_settings.dart';
 import '../widgets/bottom_tab_bar.dart';
 import '../widgets/header_bar.dart';
 
@@ -20,7 +20,7 @@ class _MainTabScreenState extends State<MainTabScreen> {
   // 各タブに対応する画面
   final List<Widget> _screens = const [
     CreateMemo(),
-    MemoList(),
+    ShowMemoList(),
     Settings(),
   ];
 
