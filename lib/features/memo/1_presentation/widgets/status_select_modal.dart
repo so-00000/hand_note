@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/status_color_mapper.dart';
-import '../../3_domain/entities/memo_status.dart';
+import '../../../../core/entities/status_entity.dart';
 
 /// 🟣 ステータス選択モーダル
 /// - 丸いカラーアイコンを並べてステータス選択
 /// - 選択時に onStatusSelected() コールバックを返す
 class StatusSelectModal extends StatelessWidget {
-  final List<MemoStatus> statuses;
+  final List<StatusEntity> statuses;
 
   /// 選択されたステータスを上位へ返す
-  final ValueChanged<MemoStatus> onStatusSelected;
+  final ValueChanged<StatusEntity> onStatusSelected;
 
   const StatusSelectModal({
     super.key,

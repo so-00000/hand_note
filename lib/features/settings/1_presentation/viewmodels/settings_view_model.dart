@@ -1,8 +1,8 @@
 // viewmodels/memo_list_view_model.dart
 
 import 'package:flutter/material.dart';
-import '../../../memo/2_application/status_service.dart';
-import '../../../memo/3_domain/entities/memo_status.dart';
+import '../../2_application/status_service.dart';
+import '../../../../core/entities/status_entity.dart';
 
 /// 🧭 設定画面の状態管理（ViewModel層）
 /// - ステータス一覧の取得
@@ -12,10 +12,10 @@ class SettingsViewModel extends ChangeNotifier {
   final StatusService _statusService = StatusService();
 
   String _displayMode = 'auto';
-  List<MemoStatus> _statusList = [];
+  List<StatusEntity> _statusList = [];
 
   String get displayMode => _displayMode;
-  List<MemoStatus> get statusList => _statusList;
+  List<StatusEntity> get statusList => _statusList;
 
   /// ステータスを取得
   Future<void> loadStatuses() async {

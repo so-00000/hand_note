@@ -1,7 +1,7 @@
 // viewmodels/create_memo_view_model.dart
 import 'package:flutter/material.dart';
 import '../../2_application/memo_service.dart';
-import '../../3_domain/entities/memo.dart';
+import '../../../../core/entities/memo_entity.dart';
 import '../../../../core/utils/snackbar_util.dart';
 
 class CreateMemoViewModel extends ChangeNotifier {
@@ -30,7 +30,7 @@ class CreateMemoViewModel extends ChangeNotifier {
 
       // 登録処理の呼び出し
       await _memoService.insertMemo(
-        Memo(
+        MemoEntity(
           content: text.trim(),
           statusId: 0,
           createdAt: DateTime.now(),

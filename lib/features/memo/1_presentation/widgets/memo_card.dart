@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/status_color_mapper.dart';
 import '../../../../core/utils/date_formatter.dart';
-import '../../3_domain/entities/memo.dart';
-import '../../3_domain/entities/memo_status.dart';
+import '../../../../core/entities/memo_entity.dart';
+import '../../../../core/entities/status_entity.dart';
 import '../viewmodels/memo_list_view_model.dart';
 import 'status_select_modal.dart';
 
@@ -13,7 +13,7 @@ import 'status_select_modal.dart';
 /// - スワイプ削除
 /// - ステータス一覧（長押しでモーダル表示）
 class MemoCard extends StatefulWidget {
-  final Memo memo;
+  final MemoEntity memo;
 
   const MemoCard({super.key, required this.memo});
 
@@ -162,7 +162,7 @@ class _MemoCardState extends State<MemoCard> {
       ),
       builder: (_) => StatusSelectModal(
         statuses: statuses,
-        onStatusSelected: (MemoStatus status) async {
+        onStatusSelected: (StatusEntity status) async {
 
           await vm.updateStatus(widget.memo, status.id!);
         },

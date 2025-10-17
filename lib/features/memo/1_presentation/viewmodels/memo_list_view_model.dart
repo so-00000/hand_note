@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import '../../2_application/memo_service.dart';
-import '../../2_application/status_service.dart';
-import '../../3_domain/entities/memo.dart';
-import '../../3_domain/entities/memo_status.dart';
+import '../../../settings/2_application/status_service.dart';
+import '../../../../core/entities/memo_entity.dart';
+import '../../../../core/entities/status_entity.dart';
 import '../../../../core/utils/snackbar_util.dart';
 
 class MemoListViewModel extends ChangeNotifier {
   final MemoService _memoService = MemoService();
   final StatusService _statusService = StatusService();
 
-  List<Memo> _memos = [];
+  List<MemoEntity> _memos = [];
   bool _isLoading = true;
 
   // getter
-  List<Memo> get memos => _memos;
+  List<MemoEntity> get memos => _memos;
   bool get isLoading => _isLoading;
 
 
@@ -55,7 +55,7 @@ class MemoListViewModel extends ChangeNotifier {
   }
 
   /// メモ本文の更新
-  Future<void> updateMemoContent(Memo memo, String newContent) async {
+  Future<void> updateMemoContent(MemoEntity memo, String newContent) async {
     // メモ本文のセット
     final updatedMemo = memo.copyWith(
       content: newContent,
@@ -69,11 +69,11 @@ class MemoListViewModel extends ChangeNotifier {
   }
 
   /// メモ削除
-  Future<void> deleteMemo(BuildContext context, Memo memo) async {
+  Future<void> deleteMemo(BuildContext context, MemoEntity memo) async {
     await _memoService.deleteMemo(memo.id!);
 
     /// Undo処理定義（削除取り消し）
-    Future<void> undoDelete(Memo memo) async {
+    Future<void> undoDelete(MemoEntity memo) async {
       await _memoService.insertMemo(memo);
       await loadMemos(); // ← 修正ポイント①：fetchAllMemos()でなくloadMemos()で状態反映
     }
@@ -98,14 +98,14 @@ class MemoListViewModel extends ChangeNotifier {
 
 
   /// 完了⇄未完了切り替え
-  Future<void> toggleStatus(Memo memo) async {
+  Future<void> toggleStatus(MemoEntity memo) async {
     await _statusService.toggleStatus(memo);
     await loadMemos();
   }
 
   /// ステータス更新
   Future<void> updateStatus(
-      Memo memo,
+      MemoEntity memo,
       int newStatusId
       ) async {
     await _memoService.updateStatus(
@@ -121,11 +121,11 @@ class MemoListViewModel extends ChangeNotifier {
   }
 
   /// ステータス一覧の表示
-  Future<List<MemoStatus>> fetchStatuses() => _statusService.fetchAllStatuses();
+  Future<List<StatusEntity>> fetchStatuses() => _statusService.fetchAllStatuses();
 
 
   /// 入力完了時（編集終了時）の処理
-  Future<void> saveIfChanged(Memo memo, String newText) async {
+  Future<void> saveIfChanged(MemoEntity memo, String newText) async {
     final trimmed = newText.trim();
     if (trimmed.isNotEmpty && trimmed != memo.content) {
       await updateMemoContent(memo, trimmed);

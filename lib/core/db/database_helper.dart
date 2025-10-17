@@ -8,7 +8,7 @@ class DatabaseHelper {
   DatabaseHelper._init();
 
   //
-  // 🔌 DB接続
+  // DB接続
   //
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -17,48 +17,48 @@ class DatabaseHelper {
   }
 
   //
-  // 🧱 初期化
+  // 初期化
   //
   Future<Database> _initDB(String filePath) async {
     final directory = await getApplicationDocumentsDirectory();
     final path = join(directory.path, filePath);
     return await openDatabase(
       path,
-      version: 10, // ✅ 最新バージョン
+      version: 12, // ✅ 最新バージョン
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
   }
 
   //
-  // 🧩 テーブル作成
+  // テーブル作成
   //
   Future _createDB(Database db, int version) async {
     // 🎨 ステータステーブル
     await db.execute('''
       CREATE TABLE status (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        color_code TEXT NOT NULL
+        status_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        status_nm TEXT NOT NULL,
+        color_cd TEXT NOT NULL
       )
     ''');
 
     // 🗒️ メモテーブル
     await db.execute('''
       CREATE TABLE memos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        memo_id INTEGER PRIMARY KEY AUTOINCREMENT,
         content TEXT NOT NULL,
         status_id INTEGER,
-        created_at TEXT NOT NULL,
-        updated_at TEXT,
-        FOREIGN KEY (status_id) REFERENCES status(id)
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME,
+        FOREIGN KEY (status_id) REFERENCES status(status_id)
       )
     ''');
 
-    // 🧩 初期データ登録（固定ステータス）
+    // 初期データ登録（固定ステータス）
     final initialStatuses = [
-      {'name': '完了', 'color_code': '01'},
-      {'name': '未完了', 'color_code': '02'},
+      {'status_nm': '完了', 'color_cd': '01'},
+      {'status_nm': '未完了', 'color_cd': '02'},
     ];
 
     for (final status in initialStatuses) {
@@ -67,10 +67,10 @@ class DatabaseHelper {
   }
 
   //
-  // 🔁 バージョンアップ対応
+  // バージョンアップ対応
   //
   Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 10) {
+    if (oldVersion < 12) {
       await db.execute('DROP TABLE IF EXISTS memos');
       await db.execute('DROP TABLE IF EXISTS status');
       await _createDB(db, newVersion);
@@ -78,7 +78,7 @@ class DatabaseHelper {
   }
 
   //
-  // 🚪 クローズ処理
+  // クローズ処理
   //
   Future close() async {
     final db = await instance.database;
