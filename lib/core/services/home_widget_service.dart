@@ -12,7 +12,7 @@ import '../model/memo_with_status_model.dart';
 class HomeWidgetService {
   static const String _mwsListKey = 'mws_list';
   static const int _maxDisplayCount = 10;
-  static const String _providerNm = 'widget.MemoWidgetProvider';
+  static const String _providerNm = 'home_widget.MemoWidgetProvider';
 
   /// 🔹 メモ＋ステータスを同期
   static Future<void> syncAllData({
