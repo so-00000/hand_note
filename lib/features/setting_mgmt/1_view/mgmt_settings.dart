@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hand_note/features/setting_mgmt/1_view/widgets/app_info_section.dart';
+import 'package:hand_note/features/setting_mgmt/1_view/widgets/display_mode_selector.dart';
+import 'package:hand_note/features/setting_mgmt/1_view/widgets/status_list_section.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/settings_view_model.dart';
-import '../widgets/app_info_section.dart';
-import '../widgets/display_mode_selector.dart';
-import '../widgets/status_list_section.dart';
+import '../2_view_model/settings_view_model.dart';
 
 
 /// ⚙️ 設定画面（ローカルDB版 / sqflite）
@@ -22,7 +22,7 @@ class _SettingsState extends State<Settings> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      context.read<SettingsViewModel>().loadStatuses();
+      context.read<SettingsVM>().loadStatuses();
     });
   }
 

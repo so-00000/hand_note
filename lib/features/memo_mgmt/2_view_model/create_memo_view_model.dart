@@ -1,12 +1,12 @@
 // viewmodels/create_memo_view_model.dart
 import 'package:flutter/material.dart';
-import '../../2_application/memo_service.dart';
-import '../../3_domain/entities/memo.dart';
-import '../../../../core/utils/snackbar_util.dart';
+import '../../../core/model/memo_model.dart';
+import '../../../core/utils/snackbar_util.dart';
+import '../3_model/repository/memo_mgmt_repository.dart';
 
-class CreateMemoViewModel extends ChangeNotifier {
+class CreateMemoVM extends ChangeNotifier {
 
-  final MemoService _memoService = MemoService();
+  final MemoMgmtRepository _memoRepository = MemoMgmtRepository();
 
   bool _isSaving = false;
   bool get isSaving => _isSaving;
@@ -29,7 +29,7 @@ class CreateMemoViewModel extends ChangeNotifier {
     try {
 
       // 登録処理の呼び出し
-      await _memoService.insertMemo(
+      await _memoRepository.insertMemo(
         Memo(
           content: text.trim(),
           statusId: 0,

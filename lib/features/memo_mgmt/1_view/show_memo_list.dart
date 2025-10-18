@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:hand_note/features/memo_mgmt/1_view/widgets/memo_card.dart';
+import 'package:hand_note/features/memo_mgmt/1_view/widgets/memo_search_bar.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/memo_list_view_model.dart';
-import '../widgets/memo_card.dart';
-import '../widgets/memo_search_bar.dart';
+import '../2_view_model/show_memo_list_view_model.dart';
 
 /// 🗂 メモ一覧画面
 /// - 検索バー + メモリスト
 /// - スワイプ削除 / 編集 / ステータス変更に対応
-class MemoList extends StatefulWidget {
-  const MemoList({super.key});
+class ShowMemoList extends StatefulWidget {
+  const ShowMemoList({super.key});
 
   @override
-  State<MemoList> createState() => _MemoListState();
+  State<ShowMemoList> createState() => _ShowMemoListState();
 }
 
-class _MemoListState extends State<MemoList> {
+class _ShowMemoListState extends State<ShowMemoList> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -22,7 +22,7 @@ class _MemoListState extends State<MemoList> {
     super.initState();
     // 🌀 初回レンダリング後にメモ一覧をロード
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MemoListViewModel>().loadMemos();
+      context.read<ShowMemoListVM>().loadMemos();
     });
   }
 
@@ -34,7 +34,7 @@ class _MemoListState extends State<MemoList> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<MemoListViewModel>();
+    final vm = context.watch<ShowMemoListVM>();
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -59,7 +59,7 @@ class _MemoListState extends State<MemoList> {
 
   /// 🧩 メモリスト表示部分
   Widget _buildMemoList(
-      BuildContext context, MemoListViewModel vm, ThemeData theme) {
+      BuildContext context, ShowMemoListVM vm, ThemeData theme) {
     // ローディング中
     if (vm.isLoading) {
       return Center(
@@ -68,7 +68,7 @@ class _MemoListState extends State<MemoList> {
     }
 
     // 登録データが0件のとき
-    if (vm.memos.isEmpty) {
+    if (vm.memoWithStatus.isEmpty) {
       return Center(
         child: Text(
           'まだメモがありません',
@@ -86,13 +86,13 @@ class _MemoListState extends State<MemoList> {
       color: theme.colorScheme.primary,
 
       child: ListView.builder(
-        itemCount: vm.memos.length,
+        itemCount: vm.memoWithStatus.length,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
 
         // 各メモ行を描画
         itemBuilder: (context, index) {
-          final memo = vm.memos[index];
-          return MemoCard(memo: memo);
+          final memoWithStatus = vm.memoWithStatus[index];
+          return MemoCard(memoWithStatus: memoWithStatus);
         },
       ),
     );

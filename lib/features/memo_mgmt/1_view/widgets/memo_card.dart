@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/status_color_mapper.dart';
+import '../../../../core/model/memo_with_status_model.dart';
+import '../../../../core/model/status_model.dart';
 import '../../../../core/utils/date_formatter.dart';
-import '../../3_domain/entities/memo.dart';
-import '../../3_domain/entities/memo_status.dart';
-import '../viewmodels/memo_list_view_model.dart';
+import '../../2_view_model/show_memo_list_view_model.dart';
 import 'status_select_modal.dart';
 
-/// 🪧 メモ1件分のカードUI
-/// - 本文表示・編集
-/// - ステータス表示（丸）
-/// - スワイプ削除
-/// - ステータス一覧（長押しでモーダル表示）
+/// ===============================
+/// 🪧 MemoCard（メモカード）
+/// ===============================
+///
+/// - メモ一覧画面の1行カード
+/// - ステータス切替・削除・編集に対応
+///
 class MemoCard extends StatefulWidget {
-  final Memo memo;
+  final MemoWithStatus memoWithStatus;
 
-  const MemoCard({super.key, required this.memo});
+  const MemoCard({super.key, required this.memoWithStatus});
 
   @override
   State<MemoCard> createState() => _MemoCardState();
@@ -28,15 +30,15 @@ class _MemoCardState extends State<MemoCard> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.memo.content);
+    _controller = TextEditingController(text: widget.memoWithStatus.content);
   }
 
   @override
   void didUpdateWidget(covariant MemoCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     // 🔄 メモ内容が外部更新された場合に反映
-    if (oldWidget.memo.content != widget.memo.content) {
-      _controller.text = widget.memo.content;
+    if (oldWidget.memoWithStatus.content != widget.memoWithStatus.content) {
+      _controller.text = widget.memoWithStatus.content!;
     }
   }
 
@@ -48,17 +50,18 @@ class _MemoCardState extends State<MemoCard> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.read<MemoListViewModel>();
+    final vm = context.read<ShowMemoListVM>();
     final theme = Theme.of(context);
-    final memo = widget.memo;
+    final mws = widget.memoWithStatus;
 
-    // 🎨 ステータス関連
-    final color = getStatusColor(memo.statusColor ?? '02');
-    final statusName = memo.statusName ?? '未完了';
-    final dateStr = formatDateTime(memo.updatedAt ?? memo.createdAt);
+    final color = getStatusColor(mws.colorCd ?? '02');
+    final statusNm = mws.statusNm ?? '未完了';
+    final dateStr = formatDateTime(mws.updatedAt ?? mws.createdAt);
 
     return Dismissible(
-      key: ValueKey(memo.id),
+
+
+      key: ValueKey(mws.id),
       direction: DismissDirection.endToStart,
 
       // 🗑 左スワイプ：削除
@@ -71,7 +74,7 @@ class _MemoCardState extends State<MemoCard> {
         ),
         child: Icon(Icons.delete, color: theme.colorScheme.onError, size: 28),
       ),
-      onDismissed: (_) => vm.deleteMemo(context, memo),
+      onDismissed: (_) => vm.deleteMemo(context, mws),
 
       // 🟣 メモカード本体
       child: Container(
@@ -85,7 +88,7 @@ class _MemoCardState extends State<MemoCard> {
           children: [
             // 🎨 ステータス丸（タップで切替／長押しで一覧）
             GestureDetector(
-              onTap: () => vm.toggleStatus(memo),
+              onTap: () => vm.toggleMemoStatus(mws),
               onLongPress: () => _showStatusSelectDialog(context),
               child: Container(
                 width: 28,
@@ -110,15 +113,17 @@ class _MemoCardState extends State<MemoCard> {
                     border: InputBorder.none,
                   ),
                   onEditingComplete: () {
-                    vm.saveIfChanged(widget.memo, _controller.text);
+                    vm.updateMemoContent(mws, _controller.text);
                     setState(() => _isEditing = false);
                   },
                 )
                     : GestureDetector(
                   onTap: () => setState(() => _isEditing = true),
                   child: Text(
-                    memo.content,
-                    style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
+                    mws.content!,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontSize: 18,
+                    ),
                   ),
                 ),
 
@@ -131,7 +136,7 @@ class _MemoCardState extends State<MemoCard> {
                       style: theme.textTheme.bodySmall?.copyWith(fontSize: 14),
                     ),
                     Text(
-                      statusName,
+                      (mws.statusNm ?? ''),
                       style: theme.textTheme.bodySmall?.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -150,7 +155,7 @@ class _MemoCardState extends State<MemoCard> {
 
   /// 📋 ステータス一覧モーダル（長押し）
   Future<void> _showStatusSelectDialog(BuildContext context) async {
-    final vm = context.read<MemoListViewModel>();
+    final vm = context.read<ShowMemoListVM>();
     final statuses = await vm.fetchStatuses();
     if (!context.mounted) return;
 
@@ -162,9 +167,11 @@ class _MemoCardState extends State<MemoCard> {
       ),
       builder: (_) => StatusSelectModal(
         statuses: statuses,
-        onStatusSelected: (MemoStatus status) async {
-
-          await vm.updateStatus(widget.memo, status.id!);
+        onStatusSelected: (Status status) async {
+          await vm.updateMemoStatus(
+            widget.memoWithStatus,
+            status.statusId!,
+          );
         },
       ),
     );
