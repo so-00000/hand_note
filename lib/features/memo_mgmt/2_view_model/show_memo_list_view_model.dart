@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/model/memo_model.dart';
-import '../../../core/model/memo_with_status_model.dart';
 import '../../../core/model/status_model.dart';
-import '../../../core/utils/memo_mapper.dart';
 import '../../../core/utils/snackbar_util.dart';
 
 import '../3_model/repository/memo_mgmt_repository.dart';
@@ -11,11 +9,11 @@ class ShowMemoListVM extends ChangeNotifier {
 
   final MemoMgmtRepository _memoRepo = MemoMgmtRepository();
 
-  List<MemoWithStatus> _memoWithStatus = [];
+  List<Memo> _memo = [];
   bool _isLoading = true;
   //
   // // getter
-  List<MemoWithStatus> get memoWithStatus => _memoWithStatus;
+  List<Memo> get memo => _memo;
   bool get isLoading => _isLoading;
 
 
@@ -32,7 +30,7 @@ class ShowMemoListVM extends ChangeNotifier {
     notifyListeners();
 
     // データ取得
-    _memoWithStatus = await _memoRepo.fetchAllMemos();
+    _memo = await _memoRepo.fetchAllMemos();
 
     _isLoading = false;
     notifyListeners();
@@ -49,7 +47,7 @@ class ShowMemoListVM extends ChangeNotifier {
     final all = await _memoRepo.fetchAllMemos();
 
     // データの絞り込み
-    _memoWithStatus = all
+    _memo = all
         .where((m) => m.content!.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
@@ -58,9 +56,7 @@ class ShowMemoListVM extends ChangeNotifier {
 
 
   /// メモ本文の更新
-  Future<void> updateMemoContent(MemoWithStatus mws, String newContent) async {
-
-    final memo = MemoMapper.toMemo(mws);
+  Future<void> updateMemoContent(Memo memo, String newContent) async {
 
     // メモ本文のセット
     final updatedMemo = memo.copyWith(
@@ -75,9 +71,7 @@ class ShowMemoListVM extends ChangeNotifier {
   }
 
   /// メモステータスの更新
-  Future<void> updateMemoStatus(MemoWithStatus mws, int newStatusId) async {
-
-    final memo = MemoMapper.toMemo(mws);
+  Future<void> updateMemoStatus(Memo memo, int newStatusId) async {
 
     // メモ本文のセット
     final updatedMemo = memo.copyWith(
@@ -92,9 +86,7 @@ class ShowMemoListVM extends ChangeNotifier {
   }
 
   /// メモ削除
-  Future<void> deleteMemo(BuildContext context, MemoWithStatus mws) async {
-
-    final memo = MemoMapper.toMemo(mws);
+  Future<void> deleteMemo(BuildContext context, Memo memo) async {
 
     await _memoRepo.deleteMemo(memo.id!);
 
@@ -118,9 +110,7 @@ class ShowMemoListVM extends ChangeNotifier {
 
 
   /// 完了⇄未完了切り替え
-  Future<void> toggleMemoStatus(MemoWithStatus mws) async {
-
-    final memo = MemoMapper.toMemo(mws);
+  Future<void> toggleMemoStatus(Memo memo) async {
 
     await _memoRepo.toggleStatus(memo);
     await loadMemos();
@@ -129,14 +119,15 @@ class ShowMemoListVM extends ChangeNotifier {
   /// ステータス一覧の表示
   Future<List<Status>> fetchStatuses() => _memoRepo.fetchAllStatuses();
 
+  /// ステータス1件の取得
+  Future<Status> fetchStatusById(int statusId) => _memoRepo.fetchStatusById(statusId);
 
   /// 入力完了時（編集終了時）の処理
-  Future<void> saveIfChanged(MemoWithStatus mws, String newText) async {
+  Future<void> saveIfChanged(Memo memo, String newText) async {
 
     final trimmed = newText.trim();
-    if (trimmed.isNotEmpty && trimmed != mws.content) {
-      await updateMemoContent(mws, trimmed);
+    if (trimmed.isNotEmpty && trimmed != memo.content) {
+      await updateMemoContent(memo, trimmed);
     }
   }
-
 }

@@ -1,5 +1,6 @@
 // viewmodels/create_memo_view_model.dart
 import 'package:flutter/material.dart';
+import '../../../core/db/database_helper.dart';
 import '../../../core/model/memo_model.dart';
 import '../../../core/utils/snackbar_util.dart';
 import '../3_model/repository/memo_mgmt_repository.dart';
@@ -32,7 +33,7 @@ class CreateMemoVM extends ChangeNotifier {
       await _memoRepository.insertMemo(
         Memo(
           content: text.trim(),
-          statusId: 0,
+          statusId: 2,
           createdAt: DateTime.now(),
         ),
       );
@@ -41,6 +42,9 @@ class CreateMemoVM extends ChangeNotifier {
     } catch (e) {
       SnackBarUtil.error(context, 'メモの保存に失敗しました');
     } finally {
+
+      await DatabaseHelper.instance.logAllTables();
+
       _isSaving = false;
       notifyListeners();
     }

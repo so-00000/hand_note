@@ -68,7 +68,7 @@ class _ShowMemoListState extends State<ShowMemoList> {
     }
 
     // 登録データが0件のとき
-    if (vm.memoWithStatus.isEmpty) {
+    if (vm.memo.isEmpty) {
       return Center(
         child: Text(
           'まだメモがありません',
@@ -86,14 +86,15 @@ class _ShowMemoListState extends State<ShowMemoList> {
       color: theme.colorScheme.primary,
 
       child: ListView.builder(
-        itemCount: vm.memoWithStatus.length,
+        itemCount: vm.memo.length,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
 
         // 各メモ行を描画
         itemBuilder: (context, index) {
-          final memoWithStatus = vm.memoWithStatus[index];
-          return MemoCard(memoWithStatus: memoWithStatus);
+          final memo = vm.memo[index];
+          return MemoCard(memo: memo);
         },
+
       ),
     );
   }

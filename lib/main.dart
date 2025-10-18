@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hand_note/core/model/memo_with_status_model.dart';
 import 'package:provider/provider.dart';
 
 import 'core/screens/main_tab_screen.dart';
@@ -17,7 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // ホームウィジェットの同期
-  await _syncHomeWidget();
+  await syncHomeWidget();
 
   runApp(
     MultiProvider(
@@ -40,17 +39,15 @@ void main() async {
 }
 
 /// ホームウィジェットへメモ＋ステータス一覧を送信
-Future<void> _syncHomeWidget() async {
+Future<void> syncHomeWidget() async {
   try {
-    final mwsRepo = MemoMgmtRepository();
-    final mwsList = await mwsRepo.fetchAllMemos();
-
-    print('ログ：App launch: syncing HomeWidget '
-        '(${mwsList.length} memos)'
-    );
+    final repo = MemoMgmtRepository();
+    final memoList = await repo.fetchAllMemos();
+    final statusList = await repo.fetchAllStatuses();
 
     await HomeWidgetService.syncAllData(
-      mwsList: mwsList,
+      memoList: memoList,
+      statusList: statusList,
       action: 'launch',
     );
 
@@ -60,6 +57,7 @@ Future<void> _syncHomeWidget() async {
     print(st);
   }
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
