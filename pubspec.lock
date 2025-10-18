@@ -104,6 +104,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  home_widget:
+    dependency: "direct main"
+    description:
+      path: "packages/home_widget"
+      ref: main
+      resolved-ref: a8821a8d6affb9b3dac5a231fa3f318a8fc7552d
+      url: "https://github.com/ABausG/home_widget.git"
+    source: git
+    version: "0.8.1"
   intl:
     dependency: "direct main"
     description:
