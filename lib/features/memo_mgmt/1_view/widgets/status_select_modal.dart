@@ -27,7 +27,7 @@ class StatusSelectModal extends StatelessWidget {
         spacing: 12,
         runSpacing: 12,
         children: statuses.map((status) {
-          final colorCode = status.colorCd ?? '08';
+          final colorCode = status.statusColor ?? '08';
           final color = getStatusColor(colorCode);
 
           return GestureDetector(

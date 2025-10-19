@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 🏠 ホームウィジェット全体 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/widget_root"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp"
-    android:background="@android:color/transparent">
+    android:background="@android:color/transparent"
+    android:padding="12dp">
 
     <!-- 🪧 メモカード群 -->
     <LinearLayout
@@ -16,6 +16,35 @@
         android:layout_height="wrap_content"
         android:divider="@drawable/divider_invisible"
         android:showDividers="middle"
-        android:dividerPadding="8dp" />
+        android:dividerPadding="12dp">
+
+        <!-- ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ -->
+        <!-- 💡プレビュー用に item_memo_card.xml を2枚だけ固定配置 -->
+        <!-- 🧱 ダミー1 -->
+        <include
+            layout="@layout/item_memo_card"
+            tools:ignore="MissingPrefix" />
+        <!-- 🧱 ダミー2 -->
+        <include
+            layout="@layout/item_memo_card"
+            tools:ignore="MissingPrefix" />
+        <!-- ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ -->
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/btn_add"
+            android:text="＋"
+            android:background="@drawable/bg_memo_card_surface"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_width="60dp"
+            android:layout_height="60dp"/>
+    </FrameLayout>
+
+
 
 </LinearLayout>

@@ -7,12 +7,12 @@
 class Status {
   final int? statusId;     // ステータスID（主キー）
   final String statusNm;   // ステータス名
-  final String colorCd;  // カラーコード
+  final String statusColor;  // カラーコード
 
   const Status({
     this.statusId,
     required this.statusNm,
-    required this.colorCd,
+    required this.statusColor,
   });
 
   ///
@@ -24,7 +24,7 @@ class Status {
     return Status(
       statusId: map['status_id'] as int?,
       statusNm: map['status_nm'] ?? '',
-      colorCd: map['color_cd'] ?? '',
+      statusColor: map['status_color'] ?? '',
     );
   }
 
@@ -33,7 +33,7 @@ class Status {
     return {
       'status_id': statusId,
       'status_nm': statusNm,
-      'color_cd': colorCd,
+      'status_color': statusColor,
     };
   }
 
@@ -43,12 +43,12 @@ class Status {
   Status copyWith({
     int? statusId,
     String? statusNm,
-    String? colorCd,
+    String? statusColor,
   }) {
     return Status(
       statusId: statusId ?? this.statusId,
       statusNm: statusNm ?? this.statusNm,
-      colorCd: colorCd ?? this.colorCd,
+      statusColor: statusColor ?? this.statusColor,
     );
   }
 }

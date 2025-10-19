@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 /// ===============================
 ///
 /// DBの color_code に対応する実際の Color を定義。
-/// '01','02' は固定（完了・未完了）
+/// '1','2' は固定（完了・未完了）
 /// '11'〜'16' はユーザーカスタム候補。
 ///
 const Map<String, Color> kStatusColorMapper = {
   // 固定ステータス
-  '01': Color(0xFF2ECC71), // 完了（緑）
-  '02': Color(0xFF95A5A6), // 未完了（グレー）
+  '1': Color(0xFF2ECC71), // 完了（緑）
+  '2': Color(0xFF95A5A6), // 未完了（グレー）
 
   // ユーザーカスタム候補（最大4色）
   '11': Color(0xFFE74C3C), // 赤
@@ -44,6 +44,19 @@ final List<Map<String, dynamic>> kStatusColorPalette = [
   {'code': '12', 'color': kStatusColorMapper['12']},
   {'code': '13', 'color': kStatusColorMapper['13']},
   {'code': '14', 'color': kStatusColorMapper['14']},
-  // {'code': '15', 'color': kStatusColorMapper['15']},
-  // {'code': '16', 'color': kStatusColorMapper['16']},
 ];
+
+/// ===============================
+/// 🧭 ホームウィジェット送信用HEX変換
+/// ===============================
+///
+/// Flutter(Color) → Kotlin(Color.parseColor()) 向けのHEX文字列変換。
+/// 例：'1' → "#2ECC71"
+///
+String getColorCd(String? code) {
+  final color = getStatusColor(code);
+  // FlutterのColorを #RRGGBB 形式に変換
+  final hex = color.value.toRadixString(16).padLeft(8, '0').toUpperCase();
+  // FlutterのColorは ARGB（先頭2桁がアルファ値）なので除外して "#RRGGBB" へ
+  return "#${hex.substring(2)}";
+}

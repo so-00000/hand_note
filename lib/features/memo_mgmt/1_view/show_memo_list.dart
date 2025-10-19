@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hand_note/core/services/memo_launch_handler.dart';
 import 'package:hand_note/features/memo_mgmt/1_view/widgets/memo_card.dart';
 import 'package:hand_note/features/memo_mgmt/1_view/widgets/memo_search_bar.dart';
 import 'package:provider/provider.dart';
 import '../2_view_model/show_memo_list_view_model.dart';
 
-/// 🗂 メモ一覧画面
-/// - 検索バー + メモリスト
-/// - スワイプ削除 / 編集 / ステータス変更に対応
 class ShowMemoList extends StatefulWidget {
   const ShowMemoList({super.key});
 
@@ -16,19 +14,54 @@ class ShowMemoList extends StatefulWidget {
 
 class _ShowMemoListState extends State<ShowMemoList> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    // 🌀 初回レンダリング後にメモ一覧をロード
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ShowMemoListVM>().loadMemos();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _init());
+  }
+
+  Future<void> _init() async {
+    final vm = context.read<ShowMemoListVM>();
+    await vm.loadMemos();
+
+    // ✅ ウィジェット経由で起動した場合の処理
+    final memoId = MemoLaunchHandler.memoIdToOpen;
+    if (memoId == null) return;
+
+    print('📍 ShowMemoList 起動 MEMO_ID=$memoId');
+
+    final index = vm.memo.indexWhere((m) => m.memoId == memoId || m.memoId == memoId);
+    if (index != -1) {
+      vm.setEditingMemo(memoId);
+
+      // 🔁 ビルド完了後にスクロール
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (!mounted) return;
+
+      final position = (index * 80.0).clamp(
+        0.0,
+        _scrollController.position.maxScrollExtent,
+      );
+      await _scrollController.animateTo(
+        position,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+
+      print('✅ 自動スクロール完了 → 編集対象ID=$memoId');
+    } else {
+      print('⚠️ MEMO_ID=$memoId のメモが見つかりません');
+    }
+
+    MemoLaunchHandler.clear();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -41,13 +74,10 @@ class _ShowMemoListState extends State<ShowMemoList> {
       body: SafeArea(
         child: Column(
           children: [
-            // 🔍 検索バー
             MemoSearchBar(
               controller: _searchController,
               onSearch: (query) => vm.searchMemos(query),
             ),
-
-            // 📜 メモリスト
             Expanded(
               child: _buildMemoList(context, vm, theme),
             ),
@@ -57,42 +87,33 @@ class _ShowMemoListState extends State<ShowMemoList> {
     );
   }
 
-  /// 🧩 メモリスト表示部分
   Widget _buildMemoList(
       BuildContext context, ShowMemoListVM vm, ThemeData theme) {
-    // ローディング中
     if (vm.isLoading) {
       return Center(
         child: CircularProgressIndicator(color: theme.colorScheme.primary),
       );
     }
 
-    // 登録データが0件のとき
-    if (vm.memoWithStatus.isEmpty) {
+    if (vm.memo.isEmpty) {
       return Center(
         child: Text(
           'まだメモがありません',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
       );
     }
 
-    // 登録データが1件以上ある場合
     return RefreshIndicator(
-      // 下スワイプで再読み込み
       onRefresh: vm.loadMemos,
       color: theme.colorScheme.primary,
-
       child: ListView.builder(
-        itemCount: vm.memoWithStatus.length,
+        controller: _scrollController,
+        itemCount: vm.memo.length,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-
-        // 各メモ行を描画
         itemBuilder: (context, index) {
-          final memoWithStatus = vm.memoWithStatus[index];
-          return MemoCard(memoWithStatus: memoWithStatus);
+          final memo = vm.memo[index];
+          return MemoCard(memo: memo);
         },
       ),
     );

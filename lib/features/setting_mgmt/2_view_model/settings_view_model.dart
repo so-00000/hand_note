@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/model/status_model.dart';
+import '../../../core/services/home_widget_service.dart';
 import '../3_model/repository/setting_mgmt_repository.dart';
 
 /// 🧭 設定画面の状態管理（ViewModel層）
@@ -26,6 +27,10 @@ class SettingsVM extends ChangeNotifier {
     try {
       await StettingMgmtRepo.insertStatus(name, colorCd);
       await loadStatuses();
+
+      // ホームウィジェットにデータ同期
+      await HomeWidgetService.syncHomeWidgetFromApp();
+
       return true;
     } catch (_) {
       return false;
@@ -37,6 +42,10 @@ class SettingsVM extends ChangeNotifier {
     try {
       await StettingMgmtRepo.deleteStatus(id);
       await loadStatuses();
+
+      // ホームウィジェットにデータ同期
+      await HomeWidgetService.syncHomeWidgetFromApp();
+
       return true;
     } catch (_) {
       return false;

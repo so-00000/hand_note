@@ -3,6 +3,7 @@ import '../../../../core/constants/status_codes.dart';
 import '../../../../core/dao/memo_dao.dart';
 import '../../../../core/dao/status_dao.dart';
 import '../../../../core/model/status_model.dart';
+import '../../../../main.dart';
 
 /// StettingMgmtRepository
 /// 
@@ -22,8 +23,9 @@ class StettingMgmtRepository {
   // カスタムステータス作成
   Future<void> insertStatus(String statusNm, String colorCd) async {
 
-    final newStatus = Status(statusNm: statusNm, colorCd: colorCd);
+    final newStatus = Status(statusNm: statusNm, statusColor: colorCd);
     await _statusDao.insert(newStatus);
+
   }
 
   ///
@@ -42,12 +44,13 @@ class StettingMgmtRepository {
   /// ステータス削除（固定ステータスは削除不可）
   Future<void> deleteStatus(int statusId) async {
     final all = await _statusDao.fetchAll();
+
     final target = all.firstWhere(
           (s) => s.statusId == statusId,
       orElse: () => throw Exception('対象のステータスが見つかりません'),
     );
 
-    if (isFixedStatus(target.colorCd)) {
+    if (isFixedStatus(target.statusColor)) {
       throw Exception('固定ステータスは削除できません');
     }
 

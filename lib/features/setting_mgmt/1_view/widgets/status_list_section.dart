@@ -29,19 +29,19 @@ class StatusListSection extends StatelessWidget {
               child: Icon(Icons.delete, color: theme.colorScheme.onPrimary),
             ),
             confirmDismiss: (_) async {
-              if (isFixedStatus(s.colorCd)) {
+              if (isFixedStatus(s.statusColor)) {
                 _showSnack(context, '固定ステータスは削除できません');
                 return false;
               }
               return true;
             },
             onDismissed: (_) async {
-              await vm.deleteStatus(s.statusId ?? 0, s.colorCd);
+              await vm.deleteStatus(s.statusId ?? 0, s.statusColor);
               _showSnack(context, '「${s.statusNm}」を削除しました');
             },
             child: StatusCard(
               name: s.statusNm,
-              color: getStatusColor(s.colorCd),
+              color: getStatusColor(s.statusColor),
             ),
           ),
 
@@ -79,7 +79,7 @@ class StatusListSection extends StatelessWidget {
 
     // カスタムステータス数を制限
     final customCount =
-        vm.statusList.where((s) => !isFixedStatus(s.colorCd)).length;
+        vm.statusList.where((s) => !isFixedStatus(s.statusColor)).length;
     if (customCount >= 4) {
       _showSnack(context, '追加できるステータスは最大4件までです');
       return;

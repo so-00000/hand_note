@@ -54,7 +54,7 @@ class MemoDao {
       tableName,
       data,
       where: 'id = ?',
-      whereArgs: [memo.id],
+      whereArgs: [memo.memoId],
     );
   }
 

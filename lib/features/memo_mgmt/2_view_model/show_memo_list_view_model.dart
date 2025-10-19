@@ -1,142 +1,137 @@
 import 'package:flutter/material.dart';
 import '../../../core/model/memo_model.dart';
-import '../../../core/model/memo_with_status_model.dart';
 import '../../../core/model/status_model.dart';
-import '../../../core/utils/memo_mapper.dart';
+import '../../../core/services/home_widget_service.dart';
+import '../../../core/services/memo_launch_handler.dart';
 import '../../../core/utils/snackbar_util.dart';
-
 import '../3_model/repository/memo_mgmt_repository.dart';
 
 class ShowMemoListVM extends ChangeNotifier {
-
   final MemoMgmtRepository _memoRepo = MemoMgmtRepository();
 
-  List<MemoWithStatus> _memoWithStatus = [];
+  List<Memo> _memo = [];
   bool _isLoading = true;
-  //
-  // // getter
-  List<MemoWithStatus> get memoWithStatus => _memoWithStatus;
+  int? _editingMemoId;
+
+
+  // ===== Getter =====
+  List<Memo> get memo => _memo;
   bool get isLoading => _isLoading;
+  int? get editingMemoId => _editingMemoId;
 
-
-
-  ///
-  /// メモ本文・全体関連
-  ///
-
-
-
-  /// メモの一覧取得
+  // ===== メモ一覧取得 =====
   Future<void> loadMemos() async {
     _isLoading = true;
     notifyListeners();
 
     // データ取得
-    _memoWithStatus = await _memoRepo.fetchAllMemos();
+    _memo = await _memoRepo.fetchAllMemos();
+
+    // ✅ ホームウィジェットから起動されたメモがあれば編集対象に設定
+    final targetId = MemoLaunchHandler.memoIdToOpen;
+    // if (targetId != null) {
+    //   _editingMemoId = targetId;
+    //   MemoLaunchHandler.clear();
+    //   print('📝 編集対象メモIDを設定: $_editingMemoId');
+    // }
 
     _isLoading = false;
     notifyListeners();
   }
 
-  /// 検索（ローカル絞り込み）
+  // ===== 検索（ローカル絞り込み） =====
   Future<void> searchMemos(String query) async {
     if (query.isEmpty) {
       await loadMemos();
       return;
     }
 
-    // 取得処理の呼び出し（全件取得）
     final all = await _memoRepo.fetchAllMemos();
-
-    // データの絞り込み
-    _memoWithStatus = all
+    _memo = all
         .where((m) => m.content!.toLowerCase().contains(query.toLowerCase()))
         .toList();
-
     notifyListeners();
   }
 
-
-  /// メモ本文の更新
-  Future<void> updateMemoContent(MemoWithStatus mws, String newContent) async {
-
-    final memo = MemoMapper.toMemo(mws);
-
-    // メモ本文のセット
-    final updatedMemo = memo.copyWith(
-      content: newContent,
-    );
-
-    // 更新処理の呼び出し
+  // ===== メモ本文更新 =====
+  Future<void> updateMemoContent(Memo memo, String newContent) async {
+    final updatedMemo = memo.copyWith(content: newContent);
     await _memoRepo.updateMemo(updatedMemo);
-
-    // 一覧の読み込み
     await loadMemos();
+
+    // ホームウィジェットにデータ同期
+    await HomeWidgetService.syncHomeWidgetFromApp();
   }
 
-  /// メモステータスの更新
-  Future<void> updateMemoStatus(MemoWithStatus mws, int newStatusId) async {
-
-    final memo = MemoMapper.toMemo(mws);
-
-    // メモ本文のセット
-    final updatedMemo = memo.copyWith(
-      statusId: newStatusId,
-    );
-
-    // 更新処理の呼び出し
+  // ===== ステータス更新 =====
+  Future<void> updateMemoStatus(Memo memo, int newStatusId) async {
+    final updatedMemo = memo.copyWith(statusId: newStatusId);
     await _memoRepo.updateMemo(updatedMemo);
-
-    // 一覧の読み込み
     await loadMemos();
+
+    // ホームウィジェットにデータ同期
+    await HomeWidgetService.syncHomeWidgetFromApp();
   }
 
-  /// メモ削除
-  Future<void> deleteMemo(BuildContext context, MemoWithStatus mws) async {
+  // ===== メモ削除 =====
+  Future<void> deleteMemo(BuildContext context, Memo memo) async {
+    await _memoRepo.deleteMemo(memo.memoId!);
 
-    final memo = MemoMapper.toMemo(mws);
-
-    await _memoRepo.deleteMemo(memo.id!);
-
-    /// Undo処理定義（削除取り消し）
     Future<void> undoDelete(Memo memo) async {
       await _memoRepo.insertMemo(memo);
       await loadMemos();
+
+      // ホームウィジェットにデータ同期
+      await HomeWidgetService.syncHomeWidgetFromApp();
     }
 
-    // snack barの呼び出し　※Undo押下で取り消し
     SnackBarUtil.successWithUndo(
       context,
       'メモを削除しました！',
-          () async {
-        await undoDelete(memo);
-      },
+          () async => await undoDelete(memo),
     );
 
-    await loadMemos(); // ← 修正ポイント②：削除後もリスト更新
-  }
-
-
-  /// 完了⇄未完了切り替え
-  Future<void> toggleMemoStatus(MemoWithStatus mws) async {
-
-    final memo = MemoMapper.toMemo(mws);
-
-    await _memoRepo.toggleStatus(memo);
     await loadMemos();
   }
 
-  /// ステータス一覧の表示
+  // ===== ステータス切替（完了⇄未完了） =====
+  Future<void> toggleMemoStatus(Memo memo) async {
+    await _memoRepo.toggleStatus(memo);
+    await loadMemos();
+
+    // ホームウィジェットにデータ同期
+    await HomeWidgetService.syncHomeWidgetFromApp();
+  }
+
+  // ===== ステータス取得 =====
   Future<List<Status>> fetchStatuses() => _memoRepo.fetchAllStatuses();
+  Future<Status> fetchStatusById(int statusId) =>
+      _memoRepo.fetchStatusById(statusId);
 
+  // ===== 編集状態制御 =====
+  void startEditing(int memoId) {
+    _editingMemoId = memoId;
+    notifyListeners();
+  }
 
-  /// 入力完了時（編集終了時）の処理
-  Future<void> saveIfChanged(MemoWithStatus mws, String newText) async {
+  void stopEditing() {
+    _editingMemoId = null;
+    notifyListeners();
+  }
 
+  // ===== 編集完了（内容変更時のみ保存） =====
+  Future<void> saveIfChanged(Memo memo, String newText) async {
     final trimmed = newText.trim();
-    if (trimmed.isNotEmpty && trimmed != mws.content) {
-      await updateMemoContent(mws, trimmed);
+    if (trimmed.isNotEmpty && trimmed != memo.content) {
+      await updateMemoContent(memo, trimmed);
+
+      // ホームウィジェットにデータ同期
+      await HomeWidgetService.syncHomeWidgetFromApp();
     }
   }
 
+  void setEditingMemo(int memoId) {
+    _editingMemoId = memoId;
+    notifyListeners();
+  }
 }

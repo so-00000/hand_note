@@ -57,7 +57,7 @@ class StatusDao {
   }
 
   /// 1件取得（ステータスIDで検索）
-  Future<Status?> fetchById(int status_id) async {
+  Future<Status> fetchById(int status_id) async {
 
     // DB取得
     final db = await DatabaseHelper.instance.database;
@@ -70,9 +70,6 @@ class StatusDao {
       limit: 1,
     );
 
-    if (result.isEmpty) return null;
-
     return Status.fromMap(result.first);
   }
-
 }

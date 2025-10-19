@@ -1,21 +1,27 @@
 package com.example.hand_note.home_widget
+
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import android.appwidget.AppWidgetProvider
 
-/**
- * 🏠 MemoWidgetProvider
- * - Flutter(HomeWidgetService)からの更新を受け取り再描画
- */
 class MemoWidgetProvider : AppWidgetProvider() {
-    override fun onUpdate(
-        context: Context,
-        appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray
-    ) {
-        for (widgetId in appWidgetIds) {
+    override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
+        for (id in ids) {
             val views = MemoWidget.buildRemoteViews(context)
-            appWidgetManager.updateAppWidget(widgetId, views)
+            manager.updateAppWidget(id, views)
+        }
+    }
+
+    companion object {
+        fun updateAllWidgets(context: Context) {
+            val manager = AppWidgetManager.getInstance(context)
+            val component = ComponentName(context, MemoWidgetProvider::class.java)
+            val ids = manager.getAppWidgetIds(component)
+            for (id in ids) {
+                val views = MemoWidget.buildRemoteViews(context)
+                manager.updateAppWidget(id, views)
+            }
         }
     }
 }

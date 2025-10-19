@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import '../../../../core/dao/memo_dao.dart';
 import '../../../../core/dao/status_dao.dart';
 import '../../../../core/model/memo_model.dart';
-import '../../../../core/model/memo_with_status_model.dart';
 import '../../../../core/model/status_model.dart';
-import '../../../../core/utils/memo_mapper.dart';
 
 /// MemoMgmtRepository
 
@@ -32,6 +30,7 @@ class MemoMgmtRepository {
 
       // 成功ログ
       debugPrint('✅ [insertMemo] 登録成功: id=$id');
+
       return id;
 
     } catch (e, stackTrace) {
@@ -41,6 +40,32 @@ class MemoMgmtRepository {
       rethrow; // ← 上位層でハンドリングできるよう再スロー
     }
   }
+
+  ///
+  /// READ
+  ///
+
+  /// メモデータ全件取得
+  Future<List<Memo>> fetchAllMemos() async {
+    try {
+
+      // 取得処理の呼び出し
+      final result = await _memoDao.fetchAll();
+
+      // ログ出力
+      debugPrint('📄 [MemoMgmtRepository] fetchAllMemos: ${result.length}件取得');
+      for (final memo in result) {
+        debugPrint('  - id=${memo.memoId}, content="${memo.content}", statusId=${memo.statusId}, updatedAt=${memo.updatedAt}');
+      }
+
+      return result;
+    } catch (e, st) {
+      debugPrint('❌ [MemoMgmtRepository] fetchAllMemos 取得失敗: $e');
+      debugPrint(st.toString());
+      rethrow;
+    }
+  }
+
 
   ///
   /// UPDATE
@@ -57,6 +82,8 @@ class MemoMgmtRepository {
     // 更新処理の呼び出し
     await _memoDao.update(updatedMemo);
   }
+
+
 
   /// メモのステータスをトグル（完了 ⇄ 未完了）
 
@@ -76,11 +103,28 @@ class MemoMgmtRepository {
     await _memoDao.update(updated);
   }
 
+
+  /// 更新（データが存在する場合） or 挿入（データが存在しない場合）
+  Future<void> upsertMemo(Memo memo) async {
+    if (memo.memoId == null) {
+      await _memoDao.insert(memo);
+      return;
+    }
+    final existing = await _memoDao.fetchById(memo.memoId!);
+    if (existing != null) {
+      await _memoDao.update(memo);
+    } else {
+      await _memoDao.insert(memo);
+    }
+  }
+
+
+
+
   /// 削除
   Future<int> deleteMemo(int id) async {
     return await _memoDao.delete(id);
   }
-
 
 
   ///
@@ -96,31 +140,8 @@ class MemoMgmtRepository {
     return await _statusDao.fetchAll();
   }
 
-
-  ///
-  /// MemoWithStatusモデルの操作
-  ///
-
-
-  /// 一覧取得（JOIN済み）
-  Future<List<MemoWithStatus>> fetchAllMemos() async {
-    final memos = await _memoDao.fetchAll();
-    final statuses = await _statusDao.fetchAll();
-
-    return memos.map((memo) {
-      final status = statuses.firstWhere(
-            (s) => s.statusId == memo.statusId,
-        orElse: () => const Status(statusNm: '未設定', colorCd: '#999999'),
-      );
-      return MemoWithStatus(
-        id: memo.id,
-        content: memo.content,
-        statusId: memo.statusId,
-        statusNm: status.statusNm,
-        colorCd: status.colorCd,
-        createdAt: memo.createdAt,
-        updatedAt: memo.updatedAt,
-      );
-    }).toList();
+  // 1件取得（ステータスIDで検索）
+  Future<Status> fetchStatusById(int statusId) async {
+    return await _statusDao.fetchById(statusId);
   }
 }
