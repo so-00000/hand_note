@@ -3,7 +3,6 @@ import '../../../../core/dao/memo_dao.dart';
 import '../../../../core/dao/status_dao.dart';
 import '../../../../core/model/memo_model.dart';
 import '../../../../core/model/status_model.dart';
-import '../../../../main.dart';
 
 /// MemoMgmtRepository
 
@@ -31,9 +30,6 @@ class MemoMgmtRepository {
 
       // 成功ログ
       debugPrint('✅ [insertMemo] 登録成功: id=$id');
-
-      // ホームウィジェットの同期
-      await syncHomeWidget();
 
       return id;
 
@@ -85,10 +81,9 @@ class MemoMgmtRepository {
 
     // 更新処理の呼び出し
     await _memoDao.update(updatedMemo);
-
-    // ホームウィジェットの同期
-    await syncHomeWidget();
   }
+
+
 
   /// メモのステータスをトグル（完了 ⇄ 未完了）
 
@@ -106,17 +101,28 @@ class MemoMgmtRepository {
     );
 
     await _memoDao.update(updated);
-
-    // ホームウィジェットの同期
-    await syncHomeWidget();
   }
+
+
+  /// 更新（データが存在する場合） or 挿入（データが存在しない場合）
+  Future<void> upsertMemo(Memo memo) async {
+    if (memo.memoId == null) {
+      await _memoDao.insert(memo);
+      return;
+    }
+    final existing = await _memoDao.fetchById(memo.memoId!);
+    if (existing != null) {
+      await _memoDao.update(memo);
+    } else {
+      await _memoDao.insert(memo);
+    }
+  }
+
+
+
 
   /// 削除
   Future<int> deleteMemo(int id) async {
-
-    // ホームウィジェットの同期
-    await syncHomeWidget();
-
     return await _memoDao.delete(id);
   }
 

@@ -26,8 +26,6 @@ class StettingMgmtRepository {
     final newStatus = Status(statusNm: statusNm, statusColor: colorCd);
     await _statusDao.insert(newStatus);
 
-    // ホームウィジェットの同期
-    await syncHomeWidget();
   }
 
   ///
@@ -57,8 +55,5 @@ class StettingMgmtRepository {
     }
 
     await _statusDao.delete(statusId);
-
-    // ホームウィジェットの同期
-    await syncHomeWidget();
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:home_widget/home_widget.dart';
@@ -10,13 +11,12 @@ import 'core/theme/theme_notifier.dart';
 
 import 'features/memo_mgmt/2_view_model/create_memo_view_model.dart';
 import 'features/memo_mgmt/2_view_model/show_memo_list_view_model.dart';
-import 'features/memo_mgmt/3_model/repository/memo_mgmt_repository.dart';
 import 'features/setting_mgmt/2_view_model/settings_view_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ Cold Start（完全終了状態からの起動）
+  // ✅ Cold Start（ホームウィジェット経由で起動）
   final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
   if (uri != null && uri.queryParameters['MEMO_ID'] != null) {
     final memoId = int.tryParse(uri.queryParameters['MEMO_ID']!);
@@ -26,9 +26,10 @@ void main() async {
     }
   }
 
-  // ✅ ホームウィジェットとの同期
-  await syncHomeWidget();
+  // ✅ （ホームウィジェット → アプリ）初回同期（Cold Start対応）
+  await HomeWidgetService.syncAppFromWidget();
 
+  // ✅ アプリ起動
   runApp(
     MultiProvider(
       providers: [
@@ -42,26 +43,6 @@ void main() async {
   );
 }
 
-/// ✅ ホームウィジェットへのデータ送信
-Future<void> syncHomeWidget() async {
-  try {
-    final repo = MemoMgmtRepository();
-    final memoList = await repo.fetchAllMemos();
-    final statusList = await repo.fetchAllStatuses();
-
-    await HomeWidgetService.syncAllData(
-      memoList: memoList,
-      statusList: statusList,
-      action: 'launch',
-    );
-
-    print('✅ HomeWidget synced successfully');
-  } catch (e, st) {
-    print('❌ Failed to sync HomeWidget: $e');
-    print(st);
-  }
-}
-
 /// =================================
 /// 🏠 アプリ本体
 /// =================================
@@ -72,28 +53,34 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+// ✅ ライフサイクル監視を追加（WidgetsBindingObserver）
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     super.initState();
 
-    // ✅ Warm Start（バックグラウンドからの復帰）対応
-    HomeWidget.widgetClicked.listen((Uri? uri) {
+    // 🔹 ライフサイクル監視を登録
+    WidgetsBinding.instance.addObserver(this);
+
+    // ✅ Warm Start（ホームウィジェットをタップして復帰）
+    HomeWidget.widgetClicked.listen((Uri? uri) async {
+      // 🔸 同期実行（非同期で十分）
+      unawaited(HomeWidgetService.syncAppFromWidget());
+
       if (uri != null && uri.queryParameters['MEMO_ID'] != null) {
         final memoId = int.tryParse(uri.queryParameters['MEMO_ID']!);
         if (memoId != null) {
           print('🔥 Warm Start MEMO_ID=$memoId');
           MemoLaunchHandler.setMemoId(memoId);
 
-          // Flutterツリーが描画済みならNavigatorで画面を開く
           WidgetsBinding.instance.addPostFrameCallback((_) {
             navigatorKey.currentState?.pushAndRemoveUntil(
               MaterialPageRoute(
                 builder: (_) => const MainTabScreen(initialTabIndex: 1),
               ),
-                  (route) => false, // スタックをリセットして切り替え
+                  (route) => false,
             );
           });
         }
@@ -102,12 +89,39 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
+  void dispose() {
+    // 🔹 ライフサイクル監視を解除
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // ✅ アプリがフォアグラウンドに戻った時（手動復帰含む）
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      print('📲 App resumed → 同期実行');
+
+      // 1️⃣ 同期を待ってからリロード
+      await HomeWidgetService.syncAppFromWidget();
+
+      // 2️⃣ 一覧再読込（最新DB内容でUI更新）
+      final vm = Provider.of<ShowMemoListVM>(
+        navigatorKey.currentContext!,
+        listen: false,
+      );
+      await vm.loadMemos(); // ←ここもawaitして安全に
+    }
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
     final themeNotifier = context.watch<ThemeNotifier>();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      navigatorKey: navigatorKey, // 🔑 Warm Start遷移に必須
+      navigatorKey: navigatorKey,
       title: 'Hand Note',
       theme: AppThemes.lightTheme,
       darkTheme: AppThemes.darkTheme,

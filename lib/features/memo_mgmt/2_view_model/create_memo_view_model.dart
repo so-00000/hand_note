@@ -5,6 +5,8 @@ import '../../../core/model/memo_model.dart';
 import '../../../core/utils/snackbar_util.dart';
 import '../3_model/repository/memo_mgmt_repository.dart';
 
+import '../../../core/services/home_widget_service.dart';
+
 class CreateMemoVM extends ChangeNotifier {
 
   final MemoMgmtRepository _memoRepository = MemoMgmtRepository();
@@ -37,6 +39,9 @@ class CreateMemoVM extends ChangeNotifier {
           createdAt: DateTime.now(),
         ),
       );
+
+      // ホームウィジェットにデータ同期
+      await HomeWidgetService.syncHomeWidgetFromApp();
 
       SnackBarUtil.success(context, 'メモを保存しました！');
     } catch (e) {

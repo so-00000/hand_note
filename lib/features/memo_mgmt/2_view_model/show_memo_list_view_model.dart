@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/model/memo_model.dart';
 import '../../../core/model/status_model.dart';
+import '../../../core/services/home_widget_service.dart';
 import '../../../core/services/memo_launch_handler.dart';
 import '../../../core/utils/snackbar_util.dart';
 import '../3_model/repository/memo_mgmt_repository.dart';
@@ -10,7 +11,7 @@ class ShowMemoListVM extends ChangeNotifier {
 
   List<Memo> _memo = [];
   bool _isLoading = true;
-  int? _editingMemoId; // 👈 現在編集中のメモIDを保持
+  int? _editingMemoId;
 
 
   // ===== Getter =====
@@ -57,6 +58,9 @@ class ShowMemoListVM extends ChangeNotifier {
     final updatedMemo = memo.copyWith(content: newContent);
     await _memoRepo.updateMemo(updatedMemo);
     await loadMemos();
+
+    // ホームウィジェットにデータ同期
+    await HomeWidgetService.syncHomeWidgetFromApp();
   }
 
   // ===== ステータス更新 =====
@@ -64,6 +68,9 @@ class ShowMemoListVM extends ChangeNotifier {
     final updatedMemo = memo.copyWith(statusId: newStatusId);
     await _memoRepo.updateMemo(updatedMemo);
     await loadMemos();
+
+    // ホームウィジェットにデータ同期
+    await HomeWidgetService.syncHomeWidgetFromApp();
   }
 
   // ===== メモ削除 =====
@@ -73,6 +80,9 @@ class ShowMemoListVM extends ChangeNotifier {
     Future<void> undoDelete(Memo memo) async {
       await _memoRepo.insertMemo(memo);
       await loadMemos();
+
+      // ホームウィジェットにデータ同期
+      await HomeWidgetService.syncHomeWidgetFromApp();
     }
 
     SnackBarUtil.successWithUndo(
@@ -88,6 +98,9 @@ class ShowMemoListVM extends ChangeNotifier {
   Future<void> toggleMemoStatus(Memo memo) async {
     await _memoRepo.toggleStatus(memo);
     await loadMemos();
+
+    // ホームウィジェットにデータ同期
+    await HomeWidgetService.syncHomeWidgetFromApp();
   }
 
   // ===== ステータス取得 =====
@@ -111,14 +124,14 @@ class ShowMemoListVM extends ChangeNotifier {
     final trimmed = newText.trim();
     if (trimmed.isNotEmpty && trimmed != memo.content) {
       await updateMemoContent(memo, trimmed);
+
+      // ホームウィジェットにデータ同期
+      await HomeWidgetService.syncHomeWidgetFromApp();
     }
   }
-
-
 
   void setEditingMemo(int memoId) {
     _editingMemoId = memoId;
     notifyListeners();
   }
-
 }
