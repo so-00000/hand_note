@@ -48,7 +48,7 @@ object MemoWidget {
         val addIntent = HomeWidgetLaunchIntent.getActivity(
             context,
             MainActivity::class.java,
-            "handnote://open_memo".toUri()
+            "handnote://open_memo?MEMO_ID=0".toUri()
         )
         parent.setOnClickPendingIntent(R.id.btn_add, addIntent)
 

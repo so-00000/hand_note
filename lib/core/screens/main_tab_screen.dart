@@ -28,10 +28,20 @@ class _MainTabScreenState extends State<MainTabScreen> {
     super.initState();
     _selectedIndex = widget.initialTabIndex;
 
-    // Cold Start のみ判定
-    if (MemoLaunchHandler.memoIdToOpen != null) {
-      _selectedIndex = 1;
-      print('🧭 Cold Start → 一覧タブに切替');
+    switch (MemoLaunchHandler.memoIdToOpen) {
+      case null:
+      // 何もしない
+        break;
+
+      case 0:
+        _selectedIndex = 0;
+        print('🧭 Cold Start → ホームタブに切替');
+        break;
+
+      default:
+        _selectedIndex = 1;
+        print('🧭 Cold Start → 一覧タブに切替');
+        break;
     }
   }
 

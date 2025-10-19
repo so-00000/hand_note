@@ -9,6 +9,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../core/services/memo_launch_handler.dart';
 import '../2_view_model/create_memo_view_model.dart';
 
 class CreateMemo extends StatelessWidget {
@@ -88,6 +89,7 @@ class TaskInputArea extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextField(
         controller: controller,
+        autofocus: MemoLaunchHandler.memoIdToOpen == 0, // ← ★ここを追加
         style: theme.textTheme.bodyLarge?.copyWith(
           fontSize: 18,
           fontWeight: FontWeight.normal,
@@ -101,6 +103,7 @@ class TaskInputArea extends StatelessWidget {
     );
   }
 }
+
 
 /// 🚀 作成ボタン
 class CreateMemoButton extends StatelessWidget {
