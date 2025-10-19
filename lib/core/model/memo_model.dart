@@ -5,14 +5,14 @@
 /// - 対応テーブル：`memos`
 ///
 class Memo {
-  final int? id;             // メモID（主キー）
+  final int? memoId;             // メモID（主キー）
   final String? content;      // メモ本文
   final int? statusId;       // ステータスID
   final DateTime? createdAt;  // 作成日時
   final DateTime? updatedAt; // 更新日時（null可）
 
   const Memo({
-    this.id,
+    this.memoId,
     required this.content,
     required this.statusId,
     required this.createdAt,
@@ -26,7 +26,7 @@ class Memo {
   /// Map → クラス（DB読み込み用）
   factory Memo.fromMap(Map<String, dynamic> map) {
     return Memo(
-      id: map['id'] as int?,
+      memoId: map['id'] as int?,
       content: map['content'] ?? '',
       statusId: map['status_id'] as int?,
       createdAt: DateTime.parse(map['created_at']),
@@ -38,7 +38,7 @@ class Memo {
   /// クラス → Map（DB保存用）
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'id': memoId,
       'content': content,
       'status_id': statusId,
       'created_at': createdAt?.toIso8601String(),
@@ -58,7 +58,7 @@ class Memo {
     DateTime? updatedAt,
   }) {
     return Memo(
-      id: id ?? this.id,
+      memoId: id ?? this.memoId,
       content: content ?? this.content,
       statusId: statusId ?? this.statusId,
       createdAt: createdAt ?? this.createdAt,

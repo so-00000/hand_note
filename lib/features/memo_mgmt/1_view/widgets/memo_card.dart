@@ -4,6 +4,7 @@ import '../../../../core/constants/status_color_mapper.dart';
 import '../../../../core/model/memo_model.dart';
 import '../../../../core/model/status_model.dart';
 import '../../../../core/utils/date_formatter.dart';
+import '../../../../core/services/memo_launch_handler.dart'; // ← 追加
 import '../../2_view_model/show_memo_list_view_model.dart';
 import 'status_select_modal.dart';
 
@@ -14,7 +15,7 @@ import 'status_select_modal.dart';
 /// - メモ一覧画面の1行カード
 /// - ステータスは statusId 経由で非同期取得
 /// - ステータス切替 / 削除 / 編集対応
-///
+/// - MEMO_ID指定時は自動編集モードON
 class MemoCard extends StatefulWidget {
   final Memo memo;
 
@@ -32,6 +33,17 @@ class _MemoCardState extends State<MemoCard> {
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.memo.content);
+
+    // ✅ ウィジェット経由の起動時、自動編集モードON
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final vm = context.read<ShowMemoListVM>();
+      final memoId = MemoLaunchHandler.memoIdToOpen ?? vm.editingMemoId;
+      if (memoId != null && memoId == widget.memo.memoId && mounted) { // ←ここをmemo.memoIdに統一
+        setState(() => _isEditing = true);
+        print('✏️ 自動編集モード開始: MEMO_ID=${widget.memo.memoId}');
+      }
+    });
+
   }
 
   @override
@@ -39,7 +51,7 @@ class _MemoCardState extends State<MemoCard> {
     super.didUpdateWidget(oldWidget);
     // 🔄 外部でメモ内容が更新された場合に反映
     if (oldWidget.memo.content != widget.memo.content) {
-      _controller.text = widget.memo.content!;
+      _controller.text = widget.memo.content ?? '';
     }
   }
 
@@ -71,7 +83,7 @@ class _MemoCardState extends State<MemoCard> {
         final statusNm = status.statusNm;
 
         return Dismissible(
-          key: ValueKey(memo.id),
+          key: ValueKey(memo.memoId),
           direction: DismissDirection.endToStart,
           background: Container(
             alignment: Alignment.centerRight,
@@ -118,7 +130,7 @@ class _MemoCardState extends State<MemoCard> {
                     title: _isEditing
                         ? TextField(
                       controller: _controller,
-                      autofocus: true,
+                      autofocus: true, // ← 編集モード時に自動フォーカス
                       style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
                       decoration: const InputDecoration(
                         isDense: true,
@@ -127,12 +139,13 @@ class _MemoCardState extends State<MemoCard> {
                       onEditingComplete: () {
                         vm.updateMemoContent(memo, _controller.text);
                         setState(() => _isEditing = false);
+                        FocusScope.of(context).unfocus();
                       },
                     )
                         : GestureDetector(
                       onTap: () => setState(() => _isEditing = true),
                       child: Text(
-                        memo.content!,
+                        memo.content ?? '',
                         style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
                       ),
                     ),

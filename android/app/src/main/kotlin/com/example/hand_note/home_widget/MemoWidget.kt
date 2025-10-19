@@ -6,10 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.*
 import android.widget.RemoteViews
+import com.example.hand_note.MainActivity
 import com.example.hand_note.R
 import es.antonborri.home_widget.HomeWidgetPlugin
 import org.json.JSONArray
 import org.json.JSONObject
+import androidx.core.net.toUri
+import es.antonborri.home_widget.HomeWidgetLaunchIntent
+
 
 object MemoWidget {
 
@@ -37,6 +41,16 @@ object MemoWidget {
         parent.removeAllViews(R.id.memo_list_container)
 
         val now = System.currentTimeMillis()
+
+
+        // ✅ 追加アイコンタップでアプリ起動（新規入力）
+
+        val addIntent = HomeWidgetLaunchIntent.getActivity(
+            context,
+            MainActivity::class.java,
+            "handnote://open_memo".toUri()
+        )
+        parent.setOnClickPendingIntent(R.id.btn_add, addIntent)
 
         // メモ一覧を描画
         for (i in 0 until memoArray.length()) {
@@ -70,7 +84,6 @@ object MemoWidget {
             item.setImageViewBitmap(R.id.status_circle, circleBitmap)
 
             item.setTextViewText(R.id.memo_content, content)
-            item.setTextViewText(R.id.memo_date, updatedAt)
             item.setTextViewText(R.id.status_nm, statusName)
             item.setTextColor(R.id.status_nm, parsedColor)
 
@@ -94,7 +107,21 @@ object MemoWidget {
             )
             item.setOnClickPendingIntent(R.id.status_nm, nextPendingIntent)
 
+
+            /// アプリ遷移
+
+            // ✅ メモ本文タップでアプリ起動（該当メモ編集）
+            val openPendingIntent = HomeWidgetLaunchIntent.getActivity(
+                context,
+                MainActivity::class.java,
+                "handnote://open_memo?MEMO_ID=$memoId".toUri()
+            )
+            item.setOnClickPendingIntent(R.id.memo_content, openPendingIntent)
+
+
+
             parent.addView(R.id.memo_list_container, item)
+
         }
 
         return parent

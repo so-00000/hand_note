@@ -59,7 +59,7 @@ class MemoMgmtRepository {
       // ログ出力
       debugPrint('📄 [MemoMgmtRepository] fetchAllMemos: ${result.length}件取得');
       for (final memo in result) {
-        debugPrint('  - id=${memo.id}, content="${memo.content}", statusId=${memo.statusId}, updatedAt=${memo.updatedAt}');
+        debugPrint('  - id=${memo.memoId}, content="${memo.content}", statusId=${memo.statusId}, updatedAt=${memo.updatedAt}');
       }
 
       return result;

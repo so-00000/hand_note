@@ -51,7 +51,7 @@ class HomeWidgetService {
 
     final jsonList = limited
         .map((m) => {
-      'id': m.id ?? '',
+      'id': m.memoId ?? '',
       'content': m.content ?? '',
       'updatedAt': formatDateTime(m.updatedAt),
       'statusId': m.statusId ?? '',

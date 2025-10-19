@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:home_widget/home_widget.dart';
 
 import 'core/screens/main_tab_screen.dart';
 import 'core/services/home_widget_service.dart';
+import 'core/services/memo_launch_handler.dart';
 import 'core/theme/app_themes.dart';
 import 'core/theme/theme_notifier.dart';
 
@@ -12,25 +14,27 @@ import 'features/memo_mgmt/3_model/repository/memo_mgmt_repository.dart';
 import 'features/setting_mgmt/2_view_model/settings_view_model.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ホームウィジェットの同期
+  // ✅ Cold Start（完全終了状態からの起動）
+  final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
+  if (uri != null && uri.queryParameters['MEMO_ID'] != null) {
+    final memoId = int.tryParse(uri.queryParameters['MEMO_ID']!);
+    if (memoId != null) {
+      MemoLaunchHandler.setMemoId(memoId);
+      print('🧭 Cold Start MEMO_ID=$memoId');
+    }
+  }
+
+  // ✅ ホームウィジェットとの同期
   await syncHomeWidget();
 
   runApp(
     MultiProvider(
       providers: [
-        // テーマ切り替え用
         ChangeNotifierProvider(create: (_) => ThemeNotifier()),
-
-        // 新規作成画面
         ChangeNotifierProvider(create: (_) => CreateMemoVM()),
-
-        // 一覧画面
         ChangeNotifierProvider(create: (_) => ShowMemoListVM()),
-
-        // 設定画面
         ChangeNotifierProvider(create: (_) => SettingsVM()),
       ],
       child: const MyApp(),
@@ -38,7 +42,7 @@ void main() async {
   );
 }
 
-/// ホームウィジェットへメモ＋ステータス一覧を送信
+/// ✅ ホームウィジェットへのデータ送信
 Future<void> syncHomeWidget() async {
   try {
     final repo = MemoMgmtRepository();
@@ -51,29 +55,64 @@ Future<void> syncHomeWidget() async {
       action: 'launch',
     );
 
-    print('ログ：HomeWidget synced successfully');
+    print('✅ HomeWidget synced successfully');
   } catch (e, st) {
-    print('ログ：Failed to sync HomeWidget: $e');
+    print('❌ Failed to sync HomeWidget: $e');
     print(st);
   }
 }
 
-
-class MyApp extends StatelessWidget {
+/// =================================
+/// 🏠 アプリ本体
+/// =================================
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // ✅ Warm Start（バックグラウンドからの復帰）対応
+    HomeWidget.widgetClicked.listen((Uri? uri) {
+      if (uri != null && uri.queryParameters['MEMO_ID'] != null) {
+        final memoId = int.tryParse(uri.queryParameters['MEMO_ID']!);
+        if (memoId != null) {
+          print('🔥 Warm Start MEMO_ID=$memoId');
+          MemoLaunchHandler.setMemoId(memoId);
+
+          // Flutterツリーが描画済みならNavigatorで画面を開く
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            navigatorKey.currentState?.pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (_) => const MainTabScreen(initialTabIndex: 1),
+              ),
+                  (route) => false, // スタックをリセットして切り替え
+            );
+          });
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final themeNotifier = context.watch<ThemeNotifier>();
-    final themeMode = themeNotifier.themeMode;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey, // 🔑 Warm Start遷移に必須
       title: 'Hand Note',
       theme: AppThemes.lightTheme,
       darkTheme: AppThemes.darkTheme,
-      themeMode: themeMode,
-      home: const MainTabScreen(),
+      themeMode: themeNotifier.themeMode,
+      home: const MainTabScreen(initialTabIndex: 0),
     );
   }
 }
