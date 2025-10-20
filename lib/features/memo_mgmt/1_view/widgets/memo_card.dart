@@ -6,7 +6,7 @@ import '../../../../core/model/status_model.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/services/memo_launch_handler.dart'; // ← 追加
 import '../../2_view_model/show_memo_list_view_model.dart';
-import 'status_select_modal.dart';
+import '../../../setting_mgmt/1_view/widgets/status_color_modal.dart';
 
 /// ===============================
 /// 🪧 MemoCard（メモカード）
@@ -109,7 +109,7 @@ class _MemoCardState extends State<MemoCard> {
                 // 🎨 ステータス丸（タップで切替／長押しで一覧）
                 GestureDetector(
                   onTap: () => vm.toggleMemoStatus(memo),
-                  onLongPress: () => _showStatusSelectDialog(context),
+                  // onLongPress: () => _showStatusSelectDialog(context),
                   child: Container(
                     width: 28,
                     height: 28,
@@ -178,26 +178,26 @@ class _MemoCardState extends State<MemoCard> {
     );
   }
 
-  /// 📋 ステータス一覧モーダル（長押し）
-  Future<void> _showStatusSelectDialog(BuildContext context) async {
-    final vm = context.read<ShowMemoListVM>();
-    final statuses = await vm.fetchStatuses();
-    if (!context.mounted) return;
-
-    await showModalBottomSheet(
-      context: context,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => StatusSelectModal(
-        statuses: statuses,
-        onStatusSelected: (Status status) async {
-          await vm.updateMemoStatus(widget.memo, status.statusId!);
-        },
-      ),
-    );
-  }
+  // /// 📋 ステータス一覧モーダル（長押し）
+  // Future<void> _showStatusSelectDialog(BuildContext context) async {
+  //   final vm = context.read<ShowMemoListVM>();
+  //   final statuses = await vm.fetchStatuses();
+  //   if (!context.mounted) return;
+  //
+  //   await showModalBottomSheet(
+  //     context: context,
+  //     backgroundColor: Theme.of(context).colorScheme.surface,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //     ),
+  //     builder: (_) => StatusSelectModal(
+  //       statuses: statuses,
+  //       onStatusSelected: (Status status) async {
+  //         await vm.updateMemoStatus(widget.memo, status.statusId!);
+  //       },
+  //     ),
+  //   );
+  // }
 
   /// ローディング中の仮表示
   Widget _buildSkeleton(ThemeData theme) {

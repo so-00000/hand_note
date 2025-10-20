@@ -8,11 +8,10 @@ import 'package:flutter/material.dart';
 /// '1','2' は固定（完了・未完了）
 /// '11'〜'16' はユーザーカスタム候補。
 ///
-const Map<String, Color> kStatusColorMapper = {
+const Map<String, Color> StatusColorMapper = {
   // 固定ステータス
   '1': Color(0xFF2ECC71), // 完了（緑）
   '2': Color(0xFF95A5A6), // 未完了（グレー）
-
   // ユーザーカスタム候補（最大4色）
   '11': Color(0xFFE74C3C), // 赤
   '12': Color(0xFFF1C40F), // 黄
@@ -30,7 +29,7 @@ const Map<String, Color> kStatusColorMapper = {
 ///
 Color getStatusColor(String? code) {
   if (code == null) return Colors.grey;
-  return kStatusColorMapper[code] ?? Colors.grey;
+  return StatusColorMapper[code] ?? Colors.grey;
 }
 
 /// ===============================
@@ -39,11 +38,11 @@ Color getStatusColor(String? code) {
 ///
 /// 新しいステータス作成ダイアログなどで使用。
 ///
-final List<Map<String, dynamic>> kStatusColorPalette = [
-  {'code': '11', 'color': kStatusColorMapper['11']},
-  {'code': '12', 'color': kStatusColorMapper['12']},
-  {'code': '13', 'color': kStatusColorMapper['13']},
-  {'code': '14', 'color': kStatusColorMapper['14']},
+final List<Map<String, dynamic>> StatusColorPalette = [
+  {'code': '11', 'color': StatusColorMapper['11']},
+  {'code': '12', 'color': StatusColorMapper['12']},
+  {'code': '13', 'color': StatusColorMapper['13']},
+  {'code': '14', 'color': StatusColorMapper['14']},
 ];
 
 /// ===============================

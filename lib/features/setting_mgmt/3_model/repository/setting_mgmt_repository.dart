@@ -5,9 +5,9 @@ import '../../../../core/dao/status_dao.dart';
 import '../../../../core/model/status_model.dart';
 import '../../../../main.dart';
 
-/// StettingMgmtRepository
+/// SettingMgmtRepository
 /// 
-class StettingMgmtRepository {
+class SettingMgmtRepository {
 
   final StatusDao _statusDao = StatusDao();
 
@@ -21,11 +21,9 @@ class StettingMgmtRepository {
   ///
 
   // カスタムステータス作成
-  Future<void> insertStatus(String statusNm, String colorCd) async {
+  Future<void> insertStatus(String statusNm, String statusColor) async {
 
-    final newStatus = Status(statusNm: statusNm, statusColor: colorCd);
-    await _statusDao.insert(newStatus);
-
+    await _statusDao.insert(statusNm, statusColor);
   }
 
   ///
@@ -36,6 +34,21 @@ class StettingMgmtRepository {
   Future<List<Status>> fetchAllStatuses() async {
     return await _statusDao.fetchAll();
   }
+
+  ///
+  /// UPDATE
+  ///
+
+  /// 並び順の一括更新
+  Future<void> updateStatusOrder(List<Status> statuses) async {
+    await _statusDao.updateStatusOrder(statuses);
+  }
+
+  Future<void> updateStatus(Status status) async {
+    await _statusDao.update(status);
+  }
+
+
 
   ///
   /// DELETE

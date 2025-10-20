@@ -8,7 +8,7 @@ class DatabaseHelper {
   static Database? _database;
   DatabaseHelper._init();
 
-  final dbVer = 23; // ✅ 最新バージョン
+  final dbVer = 25; // ✅ 最新バージョン
 
   //
   // 🔌 DB接続
@@ -42,10 +42,11 @@ class DatabaseHelper {
     // 🎨 ステータステーブル
     await db.execute('''
       CREATE TABLE status (
-        status_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        status_nm TEXT NOT NULL,
-        status_color TEXT NOT NULL
-      )
+        status_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+        sort_no     INTEGER NOT NULL,
+        status_nm   TEXT    NOT NULL,
+        status_color TEXT   NOT NULL
+      );
     ''');
 
     // 🗒️ メモテーブル
@@ -62,8 +63,8 @@ class DatabaseHelper {
 
     // 🧩 初期データ登録（固定ステータス）
     final initialStatuses = [
-      {'status_nm': '完了', 'status_color': '1'},
-      {'status_nm': '未完了', 'status_color': '2'},
+      {'sort_no': 1, 'status_nm': '完了', 'status_color': '1'},
+      {'sort_no': 2, 'status_nm': '未完了', 'status_color': '2'},
     ];
 
     for (final status in initialStatuses) {

@@ -74,6 +74,7 @@ class HomeWidgetService {
       final hexColor = getColorCd(s.statusColor);
       return {
         'statusId': s.statusId ?? '',
+        'sortNo': s.sortNo ?? '',
         'statusNm': s.statusNm,
         'statusColor': hexColor,
       };
