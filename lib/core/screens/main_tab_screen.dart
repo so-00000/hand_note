@@ -20,9 +20,8 @@ class MainTabScreen extends StatefulWidget {
 class _MainTabScreenState extends State<MainTabScreen> {
   late int _selectedIndex;
   final List<Widget> _screens = const [CreateMemo(), ShowMemoList(), Settings()];
-  late final StreamSubscription<int> _memoIdSubscription;
+  StreamSubscription<int>? _memoIdSubscription;
 
-  @override
   @override
   void initState() {
     super.initState();
@@ -48,7 +47,7 @@ class _MainTabScreenState extends State<MainTabScreen> {
 
   @override
   void dispose() {
-    _memoIdSubscription.cancel();
+    _memoIdSubscription?.cancel(); // ← 存在する場合だけキャンセル
     super.dispose();
   }
 

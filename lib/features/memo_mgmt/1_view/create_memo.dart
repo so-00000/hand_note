@@ -1,12 +1,3 @@
-/// ===============================
-/// 📝 CreateMemo（新規メモ作成画面）
-/// ===============================
-///
-/// - View層（UI担当）
-/// - ViewModel（CreateMemoViewModel）に依存
-/// - データ操作はすべてViewModel経由で実施
-///
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/services/memo_launch_handler.dart';
@@ -44,35 +35,44 @@ class _CreateMemoBodyState extends State<_CreateMemoBody> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // 🧮 キーボード高さ（0のとき＝閉じている）
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Stack(
-          children: [
-            // 入力欄（中央）
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TaskInputArea(controller: _controller),
-              ),
-            ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              const Spacer(), // 上側スペース（入力欄を中央付近に押し下げる）
 
-            // 作成ボタン（下部固定）
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 64),
+              // 📝 入力欄（中央寄せ）
+              TaskInputArea(controller: _controller),
+
+              const Spacer(flex: 1), // 下に少し余裕を持たせて配置感を中央に
+
+              // 🚀 AnimatedPaddingでボタンを下寄せ＋キーボード時は上昇
+              AnimatedPadding(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+                padding: EdgeInsets.only(
+                  bottom: keyboardHeight > 0 ? keyboardHeight + 24 : 32,
+                ),
                 child: CreateMemoButton(controller: _controller),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// ✏️ 入力欄
+//
+// ✏️ 入力欄
+//
 class TaskInputArea extends StatelessWidget {
   final TextEditingController controller;
   const TaskInputArea({super.key, required this.controller});
@@ -89,7 +89,7 @@ class TaskInputArea extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextField(
         controller: controller,
-        autofocus: MemoLaunchHandler.memoIdToOpen == 0, // ← ★ここを追加
+        autofocus: MemoLaunchHandler.memoIdToOpen == 0,
         style: theme.textTheme.bodyLarge?.copyWith(
           fontSize: 18,
           fontWeight: FontWeight.normal,
@@ -104,8 +104,9 @@ class TaskInputArea extends StatelessWidget {
   }
 }
 
-
-/// 🚀 作成ボタン
+//
+// 🚀 作成ボタン
+//
 class CreateMemoButton extends StatelessWidget {
   final TextEditingController controller;
   const CreateMemoButton({super.key, required this.controller});
