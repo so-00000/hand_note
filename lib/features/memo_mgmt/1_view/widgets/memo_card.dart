@@ -5,6 +5,7 @@ import '../../../../core/model/memo_model.dart';
 import '../../../../core/model/status_model.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/services/memo_launch_handler.dart'; // ← 追加
+import 'status_list_modal.dart';
 import '../../2_view_model/show_memo_list_view_model.dart';
 import '../../../setting_mgmt/1_view/widgets/status_color_modal.dart';
 
@@ -109,7 +110,11 @@ class _MemoCardState extends State<MemoCard> {
                 // 🎨 ステータス丸（タップで切替／長押しで一覧）
                 GestureDetector(
                   onTap: () => vm.toggleMemoStatus(memo),
-                  // onLongPress: () => _showStatusSelectDialog(context),
+                  onLongPress: () async {
+                    final statuses = await vm.fetchStatuses();
+                    vm.showStatusListModal(memo, statuses);
+                  },
+
                   child: Container(
                     width: 28,
                     height: 28,
@@ -151,23 +156,32 @@ class _MemoCardState extends State<MemoCard> {
                     ),
 
                     // 🕒 更新日時 ＋ ステータス名
-                    subtitle: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          dateStr,
-                          style: theme.textTheme.bodySmall?.copyWith(fontSize: 14),
-                        ),
-                        Text(
-                          statusNm,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: statusColor,
+                    subtitle: SizedBox(
+                      height: 20,  //高さ固定（全角が混在時の高さ変化防止）
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center, // ← 縦中央揃え
+                        children: [
+                          Text(
+                            dateStr,
+                            style: theme.textTheme.bodySmall?.copyWith(fontSize: 14),
                           ),
-                        ),
-                      ],
+                          GestureDetector(
+                            onTap: () => vm.cycleStatusBySortNo(memo),
+                            child: Text(
+                              statusNm,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: statusColor,
+                                height: 1.0, // ← 行間を固定（さらに安定）
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+
                   ),
                 ),
               ],
@@ -178,28 +192,8 @@ class _MemoCardState extends State<MemoCard> {
     );
   }
 
-  // /// 📋 ステータス一覧モーダル（長押し）
-  // Future<void> _showStatusSelectDialog(BuildContext context) async {
-  //   final vm = context.read<ShowMemoListVM>();
-  //   final statuses = await vm.fetchStatuses();
-  //   if (!context.mounted) return;
-  //
-  //   await showModalBottomSheet(
-  //     context: context,
-  //     backgroundColor: Theme.of(context).colorScheme.surface,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-  //     ),
-  //     builder: (_) => StatusSelectModal(
-  //       statuses: statuses,
-  //       onStatusSelected: (Status status) async {
-  //         await vm.updateMemoStatus(widget.memo, status.statusId!);
-  //       },
-  //     ),
-  //   );
-  // }
 
-  /// ローディング中の仮表示
+  /// ローディング中の仮表示　※画面のちらつき防止
   Widget _buildSkeleton(ThemeData theme) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
