@@ -103,6 +103,24 @@ class ShowMemoListVM extends ChangeNotifier {
     await HomeWidgetService.syncHomeWidgetFromApp();
   }
 
+  // ===== ステータス切替（順送り） =====
+  Future<void> cycleStatusBySortNo(Memo memo) async {
+    // 全ステータスを sortNo 昇順で取得
+    final statuses = await fetchStatuses();
+    if (statuses.isEmpty) return;
+
+    // 現在のステータス位置を探す
+    final currentIndex = statuses.indexWhere((s) => s.statusId == memo.statusId);
+    if (currentIndex == -1) return;
+
+    // 次のインデックス（末尾なら先頭に戻る）
+    final nextIndex = (currentIndex + 1) % statuses.length;
+    final nextStatus = statuses[nextIndex];
+
+    // メモのステータスを更新
+    await updateMemoStatus(memo, nextStatus.statusId!);
+  }
+
   // ===== ステータス取得 =====
   Future<List<Status>> fetchStatuses() => _memoRepo.fetchAllStatuses();
   Future<Status> fetchStatusById(int statusId) =>
@@ -119,6 +137,7 @@ class ShowMemoListVM extends ChangeNotifier {
     notifyListeners();
   }
 
+
   // ===== 編集完了（内容変更時のみ保存） =====
   Future<void> saveIfChanged(Memo memo, String newText) async {
     final trimmed = newText.trim();
@@ -134,4 +153,25 @@ class ShowMemoListVM extends ChangeNotifier {
     _editingMemoId = memoId;
     notifyListeners();
   }
+
+// ===== UI制御（モーダル表示） =====
+
+// 🧭 現在ステータス変更対象となっているメモ
+  Memo? targetMemo;
+
+// 🪄 ステータス一覧表示中のリスト（nullなら非表示）
+  List<Status>? showingStatuses;
+
+  Future<void> showStatusListModal(Memo memo, List<Status> list) async {
+    targetMemo = memo;
+    showingStatuses = list;
+    notifyListeners();
+  }
+
+  Future<void> hideStatusListModal() async {
+    targetMemo = null;
+    showingStatuses = null;
+    notifyListeners();
+  }
+
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hand_note/core/services/memo_launch_handler.dart';
 import 'package:hand_note/features/memo_mgmt/1_view/widgets/memo_card.dart';
 import 'package:hand_note/features/memo_mgmt/1_view/widgets/memo_search_bar.dart';
+import 'package:hand_note/features/memo_mgmt/1_view/widgets/status_list_modal.dart';
 import 'package:provider/provider.dart';
 import '../2_view_model/show_memo_list_view_model.dart';
 
@@ -32,7 +33,7 @@ class _ShowMemoListState extends State<ShowMemoList> {
 
     print('📍 ShowMemoList 起動 MEMO_ID=$memoId');
 
-    final index = vm.memo.indexWhere((m) => m.memoId == memoId || m.memoId == memoId);
+    final index = vm.memo.indexWhere((m) => m.memoId == memoId);
     if (index != -1) {
       vm.setEditingMemo(memoId);
 
@@ -74,12 +75,37 @@ class _ShowMemoListState extends State<ShowMemoList> {
       body: SafeArea(
         child: Column(
           children: [
+            // 🔍 検索バー
             MemoSearchBar(
               controller: _searchController,
               onSearch: (query) => vm.searchMemos(query),
             ),
+
+            // 🧾 リスト + モーダルを重ねる
             Expanded(
-              child: _buildMemoList(context, vm, theme),
+              child: Stack(
+                children: [
+                  _buildMemoList(context, vm, theme),
+
+                  // 🎨 モーダルをリスト下端に配置
+                  if (vm.showingStatuses != null)
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        child: StatusListModal(
+                          key: const ValueKey('status_modal'),
+                          statuses: vm.showingStatuses!,
+                          onSelected: (status) async {
+                            await vm.updateMemoStatus(
+                                vm.targetMemo!, status.statusId!);
+                            vm.hideStatusListModal();
+                          },
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ],
         ),
