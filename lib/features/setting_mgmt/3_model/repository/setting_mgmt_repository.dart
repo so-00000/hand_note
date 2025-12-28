@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:hand_note/core/model/memo_model.dart';
 import '../../../../core/constants/status_codes.dart';
 import '../../../../core/dao/memo_dao.dart';
 import '../../../../core/dao/status_dao.dart';
@@ -10,6 +11,7 @@ import '../../../../main.dart';
 class SettingMgmtRepository {
 
   final StatusDao _statusDao = StatusDao();
+  final MemoDao _memoDao = MemoDao();
 
   
   ///
@@ -65,6 +67,21 @@ class SettingMgmtRepository {
 
     if (isFixedStatus(target.statusColor)) {
       throw Exception('固定ステータスは削除できません');
+    }
+
+    // 削除するステータスを使用中のメモを取得
+    List<Memo> memos = await _memoDao.fetchByStatus(statusId);
+
+    // 使用中のメモが存在する場合
+    if (memos.isNotEmpty){
+      // 対象のメモのIDを取得
+
+      await _memoDao.updateStatusByStatusId(
+        fromStatusId: statusId,
+        toStatusId: kStatusNotDone,
+      );
+
+      // 対象のメモのステータスをデフォルトに更新
     }
 
     await _statusDao.delete(statusId);

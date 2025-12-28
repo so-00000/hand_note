@@ -2,8 +2,8 @@
 /// 🧭 ステータスコード定義
 /// ===============================
 ///
-/// 01, 02 はアプリ固定（削除・編集不可）
-/// 03〜08 はユーザー自由設定枠
+/// 1, 2 はアプリ固定（削除・編集不可）
+/// 11〜 14 はユーザー自由設定枠
 /// DBテーブル: status
 /// カラム: color_code（文字列）
 ///
@@ -12,16 +12,16 @@
 ///
 
 /// ✅ 完了（固定）
-const String kStatusDone = '01';
+const int kStatusDone = 1;
 
 /// 🕓 未完了（固定）
-const String kStatusNotDone = '02';
+const int kStatusNotDone = 2;
 
 /// 🔧 ユーザー定義ステータス（編集可）
-const String kStatusCustom1 = '11';
-const String kStatusCustom2 = '12';
-const String kStatusCustom3 = '13';
-const String kStatusCustom4 = '14';
+const int kStatusCustom1 = 11;
+const int kStatusCustom2 = 12;
+const int kStatusCustom3 = 13;
+const int kStatusCustom4 = 14;
 
 
 /// ===============================

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hand_note/features/setting_mgmt/1_view/widgets/status_color_modal.dart';
 import '../../../../core/constants/status_color_mapper.dart';
+import '../../../../core/ui/styles/box_decorations.dart';
+import '../../../../core/ui/styles/status_color_circle.dart';
 
 /// ステータス項目カード
 /// - タップ：名前編集モードに切替
@@ -9,10 +11,11 @@ import '../../../../core/constants/status_color_mapper.dart';
 class StatusCard extends StatefulWidget {
   final String name;
   final Color color;
+
   final VoidCallback? onTap;
   final bool isAddButton;
   final ValueChanged<String>? onColorChanged;
-  final ValueChanged<String>? onNameChanged; // 📝 名前変更時
+  final ValueChanged<String>? onNameChanged;
   final VoidCallback? onDelete;
 
   const StatusCard({
@@ -58,16 +61,13 @@ class _StatusCardState extends State<StatusCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // ➕ 追加ボタン
+    /// ➕ 追加ボタン
     if (widget.isAddButton) {
       return GestureDetector(
         onTap: widget.onTap,
         child: Container(
           height: 56,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(10),
-          ),
+          decoration: boxDecoration(theme),
           child: const Center(
             child: Text(
               '+',
@@ -82,12 +82,24 @@ class _StatusCardState extends State<StatusCard> {
       );
     }
 
+
+
+    /// メイン
+
     return GestureDetector(
+
+      /// ========================
+      /// ユーザ操作時の挙動
+      /// ========================
+
+      /// タップ時
       onTap: () {
         if (widget.onNameChanged != null) {
           setState(() => _isEditing = true);
         }
       },
+
+      /// 長押し時
       onLongPress: () async {
         final selectedColorCode = await showModalBottomSheet<String>(
           context: context,
@@ -103,27 +115,25 @@ class _StatusCardState extends State<StatusCard> {
           widget.onColorChanged!(selectedColorCode);
         }
       },
+
+
+
+      /// ========================
+      /// UI
+      /// ========================
+
       child: Container(
         height: 56,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(10),
-        ),
+        decoration: boxDecoration(theme),
         child: Row(
           children: [
-            // 🎨 カラーサークル
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: widget.color,
-                shape: BoxShape.circle,
-              ),
-            ),
+
+            /// ステータス色サークル
+            StatusColorCircle(color: widget.color),
             const SizedBox(width: 16),
 
-            // 📝 ステータス名 or 編集フィールド
+            ///ステータス名
             Expanded(
               child: _isEditing
                   ? Focus(
@@ -155,7 +165,7 @@ class _StatusCardState extends State<StatusCard> {
               ),
             ),
 
-            // 🗑️ 削除ボタン
+            /// 削除ボタン（デフォルトステータスには表示させない）
             if (widget.onDelete != null)
               IconButton(
                 icon: const Icon(Icons.delete_outline, color: Colors.white),

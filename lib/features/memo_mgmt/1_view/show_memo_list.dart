@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hand_note/core/services/memo_launch_handler.dart';
+import 'package:hand_note/core/ui/styles/insets.dart';
 import 'package:hand_note/features/memo_mgmt/1_view/widgets/memo_card.dart';
 import 'package:hand_note/features/memo_mgmt/1_view/widgets/memo_search_bar.dart';
 import 'package:hand_note/features/memo_mgmt/1_view/widgets/status_list_modal.dart';
@@ -73,44 +74,57 @@ class _ShowMemoListState extends State<ShowMemoList> {
 
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            // 🔍 検索バー
-            MemoSearchBar(
-              controller: _searchController,
-              onSearch: (query) => vm.searchMemos(query),
-            ),
+        child: Padding(
 
-            // 🧾 リスト + モーダルを重ねる
-            Expanded(
-              child: Stack(
-                children: [
-                  _buildMemoList(context, vm, theme),
+          // 表示領域のセット
+          padding: const EdgeInsets.all(Insets.safePadding),
 
-                  // 🎨 モーダルをリスト下端に配置
-                  if (vm.showingStatuses != null)
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
-                        child: StatusListModal(
-                          key: const ValueKey('status_modal'),
-                          statuses: vm.showingStatuses!,
-                          onSelected: (status) async {
-                            await vm.updateMemoStatus(
-                                vm.targetMemo!, status.statusId!);
-                            vm.hideStatusListModal();
-                          },
+          // 表示内容のセット
+          child: Column(
+            children: [
+
+              // 検索バー
+              MemoSearchBar(
+                controller: _searchController,
+                onSearch: (query) => vm.searchMemos(query),
+              ),
+
+              const SizedBox(height: 12),
+
+              // メモ一覧
+              Expanded(
+                child: Stack(
+                  children: [
+                    _buildMemoList(context, vm, theme),
+
+                    // 🎨 モーダルをリスト下端に配置
+                    if (vm.showingStatuses != null)
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 200),
+                          child: StatusListModal(
+                            key: const ValueKey('status_modal'),
+                            statuses: vm.showingStatuses!,
+                            onSelected: (status) async {
+                              await vm.updateMemoStatus(
+                                vm.targetMemo!,
+                                status.statusId!,
+                              );
+                              vm.hideStatusListModal();
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+
   }
 
   Widget _buildMemoList(
@@ -125,7 +139,7 @@ class _ShowMemoListState extends State<ShowMemoList> {
       return Center(
         child: Text(
           'まだメモがありません',
-          style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.bodyLarge,
         ),
       );
     }
@@ -136,7 +150,7 @@ class _ShowMemoListState extends State<ShowMemoList> {
       child: ListView.builder(
         controller: _scrollController,
         itemCount: vm.memo.length,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
         itemBuilder: (context, index) {
           final memo = vm.memo[index];
           return MemoCard(memo: memo);
