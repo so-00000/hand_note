@@ -1,8 +1,8 @@
 // viewmodels/create_memo_view_model.dart
 import 'package:flutter/material.dart';
+import 'package:hand_note/core/result/operation_result.dart';
 import '../../../core/db/database_helper.dart';
-import '../../../core/model/memo_model.dart';
-import '../../../core/utils/snackbar_util.dart';
+import '../../../core/3_model/model/memo_model.dart';
 import '../3_model/repository/memo_mgmt_repository.dart';
 
 import '../../../core/services/home_widget_service.dart';
@@ -14,21 +14,25 @@ class CreateMemoVM extends ChangeNotifier {
   bool _isSaving = false;
   bool get isSaving => _isSaving;
 
-  Future<void> saveMemo(BuildContext context, String text) async {
+  Future<OpeResult> saveMemo(String text) async {
 
+    ///
     /// 例外処理（本文未入力の場合）
+    ///
+
     if (text.trim().isEmpty) {
-      SnackBarUtil.error(context, 'メモ内容を入力してください');
-      return;
+      return OpeResult.empty;
     }
 
+    ///
     /// 正常処理
+    ///
 
-    // state（保存中）をUIに通知
+    // UI通知：保存中
     _isSaving = true;
     notifyListeners();
 
-    // データ登録
+    /// データ登録処理
     try {
 
       // 登録処理の呼び出し
@@ -43,13 +47,20 @@ class CreateMemoVM extends ChangeNotifier {
       // ホームウィジェットにデータ同期
       await HomeWidgetService.syncHomeWidgetFromApp();
 
-      SnackBarUtil.success(context, 'メモを保存しました！');
+      // 処理結果（成功）をUI通知
+      return OpeResult.success;
+
     } catch (e) {
-      SnackBarUtil.error(context, 'メモの保存に失敗しました');
+
+      // 処理結果（失敗）をUI通知
+      return OpeResult.fail;
+
     } finally {
 
+      // ログ出力
       await DatabaseHelper.instance.logAllTables();
 
+      // UI通知：保存中解除
       _isSaving = false;
       notifyListeners();
     }

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:hand_note/core/model/memo_model.dart';
+import 'package:hand_note/core/3_model/model/memo_model.dart';
 import '../../../../core/constants/status_codes.dart';
 import '../../../../core/dao/memo_dao.dart';
 import '../../../../core/dao/status_dao.dart';
-import '../../../../core/model/status_model.dart';
+import '../../../../core/3_model/model/status_model.dart';
 import '../../../../main.dart';
 
 /// SettingMgmtRepository

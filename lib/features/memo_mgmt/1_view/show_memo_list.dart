@@ -6,7 +6,7 @@ import 'package:hand_note/features/memo_mgmt/1_view/widgets/memo_search_bar.dart
 import 'package:hand_note/features/memo_mgmt/1_view/widgets/modal_status_list.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/status_color_mapper.dart';
-import '../../../core/model/status_model.dart';
+import '../../../core/3_model/model/status_model.dart';
 import '../2_view_model/show_memo_list_view_model.dart';
 
 /// ========================
@@ -107,6 +107,7 @@ class _ShowMemoListState extends State<ShowMemoList> {
   Widget build(BuildContext context) {
     final vm = context.watch<ShowMemoListVM>();
     final theme = Theme.of(context);
+
 
     return Scaffold(
       body: SafeArea(

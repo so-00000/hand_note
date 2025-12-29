@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/model/memo_model.dart';
-import '../../../../core/model/status_model.dart';
+import '../../../../core/3_model/model/memo_model.dart';
+import '../../../../core/3_model/model/status_model.dart';
 import '../../../../core/ui/styles/box_decorations.dart';
 import '../../../../core/ui/styles/status_color_circle.dart';
 import '../../../../core/utils/date_formatter.dart';

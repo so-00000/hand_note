@@ -1,28 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:hand_note/core/utils/snackbar_util.dart';
 import 'package:provider/provider.dart';
+import '../../../core/result/operation_result.dart';
 import '../../../core/services/memo_launch_handler.dart';
+import '../../../core/ui/styles/box_decorations.dart';
 import '../2_view_model/create_memo_view_model.dart';
 
-class CreateMemo extends StatelessWidget {
+/// ========================
+/// Class
+/// ========================
+class CreateMemo extends StatefulWidget {
+
+  ///
+  /// フィールド
+  ///
+
+
+
+  ///
+  /// コンストラクタ
+  ///
   const CreateMemo({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => CreateMemoVM(),
-      child: const _CreateMemoBody(),
-    );
-  }
+  State<CreateMemo> createState() => _CreateMemoState();
 }
 
-class _CreateMemoBody extends StatefulWidget {
-  const _CreateMemoBody();
 
-  @override
-  State<_CreateMemoBody> createState() => _CreateMemoBodyState();
-}
 
-class _CreateMemoBodyState extends State<_CreateMemoBody> {
+/// ========================
+/// State
+/// ========================
+
+class _CreateMemoState extends State<CreateMemo> {
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -31,15 +41,14 @@ class _CreateMemoBodyState extends State<_CreateMemoBody> {
     super.dispose();
   }
 
+
+  /// ========================
+  /// UIビルド
+  /// ========================
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    // 🧮 キーボード高さ（0のとき＝閉じている）
-    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Padding(
@@ -48,17 +57,16 @@ class _CreateMemoBodyState extends State<_CreateMemoBody> {
             children: [
               const Spacer(), // 上側スペース（入力欄を中央付近に押し下げる）
 
-              // 📝 入力欄（中央寄せ）
+              // 入力欄（中央寄せ）
               TaskInputArea(controller: _controller),
 
               const Spacer(flex: 1),
 
-              // 🚀 AnimatedPaddingでボタンを下寄せ＋キーボード時は上昇
-              AnimatedPadding(
+              // 作成ボタン
+              AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
-                curve: Curves.easeOut,
                 padding: EdgeInsets.only(
-                  bottom: keyboardHeight > 0 ? keyboardHeight + 24 : 32,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 24,
                 ),
                 child: CreateMemoButton(controller: _controller),
               ),
@@ -82,10 +90,7 @@ class TaskInputArea extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(10),
-      ),
+      decoration: textBoxDecoration(theme),
 
       padding: const EdgeInsets.symmetric(horizontal: 16),
 
@@ -98,7 +103,7 @@ class TaskInputArea extends StatelessWidget {
         ),
 
         decoration: InputDecoration(
-          hintText: 'What do you need to do?',
+          hintText: 'メモを作成入力しましょう！',
           hintStyle: theme.textTheme.bodySmall?.copyWith(fontSize: 16),
           border: InputBorder.none,
         ),
@@ -117,6 +122,8 @@ class CreateMemoButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    // 状態監視
     final vm = context.watch<CreateMemoVM>();
 
     return ElevatedButton(
@@ -130,8 +137,25 @@ class CreateMemoButton extends StatelessWidget {
       onPressed: vm.isSaving
           ? null
           : () async {
-        await vm.saveMemo(context, controller.text);
-        controller.clear();
+
+        // 保存処理の呼び出し
+        final result = await vm.saveMemo(controller.text);
+
+        // 処理結果からSnackBar表示
+        switch (result) {
+          case OpeResult.success:
+            controller.clear();
+            SnackBarUtil.success(context, 'メモを保存しました！');
+            break;
+
+          case OpeResult.empty:
+            SnackBarUtil.error(context, 'メモ内容を入力してください');
+            break;
+
+          case OpeResult.fail:
+            SnackBarUtil.error(context, 'メモの保存に失敗しました');
+            break;
+        }
       },
       child: vm.isSaving
           ? const CircularProgressIndicator(

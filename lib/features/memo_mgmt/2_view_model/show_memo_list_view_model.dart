@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/model/memo_model.dart';
-import '../../../core/model/status_model.dart';
+import '../../../core/3_model/model/memo_model.dart';
+import '../../../core/3_model/model/status_model.dart';
 import '../../../core/services/home_widget_service.dart';
 import '../../../core/services/memo_launch_handler.dart';
 import '../../../core/utils/snackbar_util.dart';
@@ -86,11 +86,11 @@ class ShowMemoListVM extends ChangeNotifier {
       await HomeWidgetService.syncHomeWidgetFromApp();
     }
 
-    SnackBarUtil.successWithUndo(
-      context,
-      'メモを削除しました！',
-          () async => await undoDelete(memo),
-    );
+    // SnackBarUtil.successWithUndo(
+    //   context,
+    //   'メモを削除しました！',
+    //       () async => await undoDelete(memo),
+    // );
 
     await loadMemos();
   }
