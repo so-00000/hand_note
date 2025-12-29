@@ -4,7 +4,7 @@ import '../../../../core/constants/status_codes.dart';
 import '../../../../core/constants/status_color_mapper.dart';
 import '../../2_view_model/settings_view_model.dart';
 import 'status_card.dart';
-import 'status_add_modal.dart';
+import 'modal_add_status.dart';
 
 /// 🎨 ステータス一覧セクション
 /// - 並び替え対応（ReorderableListView）
@@ -13,6 +13,11 @@ import 'status_add_modal.dart';
 /// - 色変更（長押し）
 /// - 追加ボタン（最大4件まで）
 class StatusListSection extends StatelessWidget {
+
+  /// ========================
+  /// フィールド
+  /// ========================
+
   const StatusListSection({super.key});
 
   @override

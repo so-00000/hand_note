@@ -9,6 +9,7 @@ import '../3_model/repository/memo_mgmt_repository.dart';
 class ShowMemoListVM extends ChangeNotifier {
   final MemoMgmtRepository _memoRepo = MemoMgmtRepository();
 
+
   List<Memo> _memo = [];
   bool _isLoading = true;
   int? _editingMemoId;
@@ -122,7 +123,9 @@ class ShowMemoListVM extends ChangeNotifier {
   }
 
   // ===== ステータス取得 =====
+
   Future<List<Status>> fetchStatuses() => _memoRepo.fetchAllStatuses();
+
   Future<Status> fetchStatusById(int statusId) =>
       _memoRepo.fetchStatusById(statusId);
 
@@ -135,6 +138,23 @@ class ShowMemoListVM extends ChangeNotifier {
   void stopEditing() {
     _editingMemoId = null;
     notifyListeners();
+  }
+
+  final Map<int, Status> _statusMap = {};
+
+
+  /// ① 非同期：SQLiteアクセス
+  Future<void> loadStatuses() async {
+    final list = await _memoRepo.fetchAllStatuses();
+    for (final s in list) {
+      _statusMap[s.statusId!] = s;
+    }
+    notifyListeners();
+  }
+
+  /// ② 同期：メモリ参照のみ
+  Status fetchStatusByIdSync(int statusId) {
+    return _statusMap[statusId]!;
   }
 
 

@@ -7,7 +7,7 @@
 class Memo {
   final int? memoId;             // メモID（主キー）
   final String? content;      // メモ本文
-  final int? statusId;       // ステータスID
+  final int statusId;       // ステータスID
   final DateTime? createdAt;  // 作成日時
   final DateTime? updatedAt; // 更新日時（null可）
 
@@ -28,7 +28,7 @@ class Memo {
     return Memo(
       memoId: map['id'] as int?,
       content: map['content'] ?? '',
-      statusId: map['status_id'] as int?,
+      statusId: map['status_id'] as int,
       createdAt: DateTime.parse(map['created_at']),
       updatedAt:
       map['updated_at'] != null ? DateTime.parse(map['updated_at']) : null,
