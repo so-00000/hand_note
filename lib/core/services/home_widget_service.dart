@@ -121,7 +121,7 @@ class HomeWidgetService {
         final memo = Memo(
           memoId: int.tryParse(item['id']?.toString() ?? ''),
           content: item['content'] ?? '',
-          statusId: int.tryParse(item['statusId']?.toString() ?? ''),
+          statusId: int.tryParse(item['statusId']?.toString() ?? '') ?? 2,
           createdAt: DateTime.tryParse(item['createdAt'] ?? ''),
           updatedAt: DateTime.tryParse(item['updatedAt'] ?? ''),
         );

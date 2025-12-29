@@ -3,42 +3,75 @@ import 'package:hand_note/core/services/memo_launch_handler.dart';
 import 'package:hand_note/core/ui/styles/insets.dart';
 import 'package:hand_note/features/memo_mgmt/1_view/widgets/memo_card.dart';
 import 'package:hand_note/features/memo_mgmt/1_view/widgets/memo_search_bar.dart';
-import 'package:hand_note/features/memo_mgmt/1_view/widgets/status_list_modal.dart';
+import 'package:hand_note/features/memo_mgmt/1_view/widgets/modal_status_list.dart';
 import 'package:provider/provider.dart';
+import '../../../core/constants/status_color_mapper.dart';
+import '../../../core/model/status_model.dart';
 import '../2_view_model/show_memo_list_view_model.dart';
 
+/// ========================
+/// Class
+/// ========================
+
 class ShowMemoList extends StatefulWidget {
+
+  ///
+  /// フィールド
+  ///
+
+
+
+  ///
+  /// コンストラクタ
+  ///
   const ShowMemoList({super.key});
 
+  /// Stateインスタンスの生成
   @override
   State<ShowMemoList> createState() => _ShowMemoListState();
 }
 
+
+
+/// ========================
+/// State
+/// ========================
+
 class _ShowMemoListState extends State<ShowMemoList> {
+
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _init());
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _init();
+    });
   }
 
   Future<void> _init() async {
+
+    /// メモ・ステータスの全データを取得
     final vm = context.read<ShowMemoListVM>();
     await vm.loadMemos();
+    await vm.loadStatuses();
 
-    // ✅ ウィジェット経由で起動した場合の処理
+    ///
+    /// ホームウィジェット経由で起動した場合
+    ///
+
+    // 編集中のメモIDを取得
     final memoId = MemoLaunchHandler.memoIdToOpen;
     if (memoId == null) return;
 
-    print('📍 ShowMemoList 起動 MEMO_ID=$memoId');
+    print('📍 ホームウィジェット➡ShowMemoList起動 MEMO_ID=$memoId');
 
     final index = vm.memo.indexWhere((m) => m.memoId == memoId);
     if (index != -1) {
       vm.setEditingMemo(memoId);
 
-      // 🔁 ビルド完了後にスクロール
+      // ビルド完了後にスクロール
       await Future.delayed(const Duration(milliseconds: 100));
       if (!mounted) return;
 
@@ -51,8 +84,6 @@ class _ShowMemoListState extends State<ShowMemoList> {
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
-
-      print('✅ 自動スクロール完了 → 編集対象ID=$memoId');
     } else {
       print('⚠️ MEMO_ID=$memoId のメモが見つかりません');
     }
@@ -67,6 +98,11 @@ class _ShowMemoListState extends State<ShowMemoList> {
     super.dispose();
   }
 
+
+
+  /// ========================
+  /// UIビルド
+  /// ========================
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ShowMemoListVM>();
@@ -83,7 +119,7 @@ class _ShowMemoListState extends State<ShowMemoList> {
           child: Column(
             children: [
 
-              // 検索バー
+              /// 検索バー
               MemoSearchBar(
                 controller: _searchController,
                 onSearch: (query) => vm.searchMemos(query),
@@ -91,13 +127,15 @@ class _ShowMemoListState extends State<ShowMemoList> {
 
               const SizedBox(height: 12),
 
-              // メモ一覧
+              /// メモ一覧
               Expanded(
                 child: Stack(
                   children: [
+
+                    // メモ一覧をビルド
                     _buildMemoList(context, vm, theme),
 
-                    // 🎨 モーダルをリスト下端に配置
+                    // モーダルをリスト下端に配置
                     if (vm.showingStatuses != null)
                       Align(
                         alignment: Alignment.bottomCenter,
@@ -124,38 +162,93 @@ class _ShowMemoListState extends State<ShowMemoList> {
         ),
       ),
     );
-
   }
 
+  /// メモ一覧エリア
   Widget _buildMemoList(
-      BuildContext context, ShowMemoListVM vm, ThemeData theme) {
-    if (vm.isLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: theme.colorScheme.primary),
-      );
-    }
+      BuildContext context,
+      ShowMemoListVM vm,
+      ThemeData theme
+    ) {
+        // 読み込み中の場合
+        if (vm.isLoading) {
+          return Center(
+            child: CircularProgressIndicator(color: theme.colorScheme.primary),
+          );
+        }
 
-    if (vm.memo.isEmpty) {
-      return Center(
-        child: Text(
-          'まだメモがありません',
-          style: theme.textTheme.bodyLarge,
-        ),
-      );
-    }
+        // メモ0件の場合
+        if (vm.memo.isEmpty) {
+          return Center(
+            child: Text(
+              'まだメモがありません',
+              style: theme.textTheme.bodyLarge,
+            ),
+          );
+        }
 
-    return RefreshIndicator(
-      onRefresh: vm.loadMemos,
-      color: theme.colorScheme.primary,
-      child: ListView.builder(
-        controller: _scrollController,
-        itemCount: vm.memo.length,
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-        itemBuilder: (context, index) {
-          final memo = vm.memo[index];
-          return MemoCard(memo: memo);
-        },
-      ),
-    );
+        // UIビルド
+        return RefreshIndicator(
+          onRefresh: vm.loadMemos,
+          color: theme.colorScheme.primary,
+
+          // メモ一覧（カードのリスト）
+          child: ListView.builder(
+            controller: _scrollController,
+            itemCount: vm.memo.length,
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+
+            // メモ単体（カード1枚）
+            itemBuilder: (context, index) {
+              final memo = vm.memo[index];
+
+              // ステータスの取得
+              final status = vm.fetchStatusByIdSync(memo.statusId);
+              final statusColor = getStatusColor(status.statusColor);
+
+              // ホームウィジェットから遷移してきた編集中のメモ（メモIDとターゲットメモIDが一致する）に、フラグをたてる
+              final bool isInitiallyEditing =
+                      vm.targetMemo?.memoId == memo.memoId;
+
+              return MemoCard(
+                memo: memo,
+                status: status,
+                statusColor: statusColor,
+                isInitiallyEditing: isInitiallyEditing,
+
+                ///
+                /// UIイベント
+                ///
+
+                // スワイプ：メモ削除
+                onDelete: () {
+                  vm.deleteMemo(context, memo);
+                },
+
+                // ステータス円タップ：ステータス切り替え（未完 ⇔ 完了）
+                onToggleStatus: () {
+                  vm.toggleMemoStatus(memo);
+                },
+
+                // ステータス円長押し：ステータス一覧表示
+                onRequestStatusList: () async {
+                  final statuses = await vm.fetchStatuses();
+                  vm.showStatusListModal(memo, statuses);
+                },
+
+                // ステータス名タップ：ステータス順送り
+                onTapStatusName: () {
+                  vm.cycleStatusBySortNo(memo);
+                },
+
+                // テキスト編集：メモ本文更新
+                onUpdateContent: (text) {
+                  vm.updateMemoContent(memo, text);
+                },
+              );
+
+            },
+          ),
+        );
   }
 }
