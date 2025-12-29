@@ -44,6 +44,18 @@ class MemoDao {
     return Memo.fromMap(result.first);
   }
 
+  /// 🔵 READ（Status_id指定）
+  Future<List<Memo>> fetchByStatus(int statusId) async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.query(
+      tableName,
+      where: 'status_id = ?',
+      whereArgs: [statusId],
+    );
+
+    return result.map((e) => Memo.fromMap(e)).toList();
+  }
+
   /// 🟠 UPDATE（更新）
   Future<int> update(Memo memo) async {
     final db = await DatabaseHelper.instance.database;
@@ -57,6 +69,22 @@ class MemoDao {
       whereArgs: [memo.memoId],
     );
   }
+
+  /// ステータスID指定で一括更新
+  Future<int> updateStatusByStatusId({
+    required int fromStatusId,
+    required int toStatusId,
+  }) async {
+    final db = await DatabaseHelper.instance.database;
+
+    return await db.update(
+      tableName,
+      {'status_id': toStatusId},
+      where: 'status_id = ?',
+      whereArgs: [fromStatusId],
+    );
+  }
+
 
   /// 🔴 DELETE（削除）
   Future<int> delete(int id) async {

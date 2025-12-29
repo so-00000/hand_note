@@ -51,7 +51,7 @@ class _CreateMemoBodyState extends State<_CreateMemoBody> {
               // 📝 入力欄（中央寄せ）
               TaskInputArea(controller: _controller),
 
-              const Spacer(flex: 1), // 下に少し余裕を持たせて配置感を中央に
+              const Spacer(flex: 1),
 
               // 🚀 AnimatedPaddingでボタンを下寄せ＋キーボード時は上昇
               AnimatedPadding(
@@ -86,7 +86,9 @@ class TaskInputArea extends StatelessWidget {
         color: theme.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(10),
       ),
+
       padding: const EdgeInsets.symmetric(horizontal: 16),
+
       child: TextField(
         controller: controller,
         autofocus: MemoLaunchHandler.memoIdToOpen == 0,
@@ -94,6 +96,7 @@ class TaskInputArea extends StatelessWidget {
           fontSize: 18,
           fontWeight: FontWeight.normal,
         ),
+
         decoration: InputDecoration(
           hintText: 'What do you need to do?',
           hintStyle: theme.textTheme.bodySmall?.copyWith(fontSize: 16),

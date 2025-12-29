@@ -3,6 +3,7 @@ import 'package:hand_note/features/setting_mgmt/1_view/widgets/app_info_section.
 import 'package:hand_note/features/setting_mgmt/1_view/widgets/display_mode_selector.dart';
 import 'package:hand_note/features/setting_mgmt/1_view/widgets/status_list_section.dart';
 import 'package:provider/provider.dart';
+import '../../../core/ui/styles/insets.dart';
 import '../2_view_model/settings_view_model.dart';
 
 
@@ -33,22 +34,33 @@ class _SettingsState extends State<Settings> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+
+          // 表示領域のセット
+          padding: const EdgeInsets.all(Insets.safePadding),
+
+          // 表示内容のセット
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
+
+              // 表示モードセクション
               _SettingsSection(
                 title: 'Display:',
                 child: DisplayModeSelector(),
               ),
+
+              // ステータスセクション
               _SettingsSection(
                 title: 'Status:',
                 child: StatusListSection(),
               ),
+
+              // App情報セクション
               _SettingsSection(
                 title: 'Info:',
                 child: AppInfoSection(),
               ),
+
             ],
           ),
         ),
@@ -59,7 +71,7 @@ class _SettingsState extends State<Settings> {
 
 /// 📦 設定画面専用セクションラッパー
 /// - タイトルと中身をまとめて1ブロック化
-/// - 他画面で再利用しないため private class として定義
+///
 class _SettingsSection extends StatelessWidget {
   final String title;
   final Widget child;

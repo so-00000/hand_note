@@ -118,8 +118,6 @@ object MemoWidget {
             )
             item.setOnClickPendingIntent(R.id.memo_content, openPendingIntent)
 
-
-
             parent.addView(R.id.memo_list_container, item)
 
         }
