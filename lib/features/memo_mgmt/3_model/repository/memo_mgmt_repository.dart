@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import '../../../../core/dao/memo_dao.dart';
 import '../../../../core/dao/status_dao.dart';
-import '../../../../core/model/memo_model.dart';
-import '../../../../core/model/status_model.dart';
+import '../../../../core/3_model/model/memo_model.dart';
+import '../../../../core/3_model/model/status_model.dart';
 
 /// MemoMgmtRepository
 
@@ -11,20 +11,20 @@ class MemoMgmtRepository {
   final MemoDao _memoDao = MemoDao();
   final StatusDao _statusDao = StatusDao();
 
-  ///
+
+
+  /// ========================
   /// Memoモデルの操作
-  ///
+  /// ========================
+
 
   ///
   /// INSERT
   ///
 
-  //メモデータの新規作成
+  // 新規作成
   Future<int> insertMemo(Memo memo) async {
     try {
-      // 実行前ログ
-      // debugPrint('🔹 [insertMemo] 登録開始: ${memo.toMap()}');
-
       // 実行
       final id = await _memoDao.insert(memo);
 
@@ -37,15 +37,17 @@ class MemoMgmtRepository {
       // 例外発生時の詳細ログ
       debugPrint('❌ [insertMemo] 登録失敗: $e');
       debugPrint('📄 StackTrace: $stackTrace');
-      rethrow; // ← 上位層でハンドリングできるよう再スロー
+      rethrow;
     }
   }
+
+
 
   ///
   /// READ
   ///
 
-  /// メモデータ全件取得
+  // 全メモ取得
   Future<List<Memo>> fetchAllMemos() async {
     try {
 
@@ -67,9 +69,25 @@ class MemoMgmtRepository {
   }
 
 
+
   ///
   /// UPDATE
   ///
+
+  // 更新（データが存在する場合） or 挿入（データが存在しない場合）
+  Future<void> upsertMemo(Memo memo) async {
+    if (memo.memoId == null) {
+      await _memoDao.insert(memo);
+      return;
+    }
+    final existing = await _memoDao.fetchById(memo.memoId!);
+    if (existing != null) {
+      await _memoDao.update(memo);
+    } else {
+      await _memoDao.insert(memo);
+    }
+  }
+
 
   // メモデータの更新
   Future<void> updateMemo(Memo memo) async {
@@ -84,9 +102,7 @@ class MemoMgmtRepository {
   }
 
 
-
-  /// メモのステータスをトグル（完了 ⇄ 未完了）
-
+  // メモのステータスをトグル（完了 ⇄ 未完了）
   Future<void> toggleStatus(Memo memo) async {
 
     final newStatusId = (memo.statusId == 1) ? 2 : 1;
@@ -104,32 +120,21 @@ class MemoMgmtRepository {
   }
 
 
-  /// 更新（データが存在する場合） or 挿入（データが存在しない場合）
-  Future<void> upsertMemo(Memo memo) async {
-    if (memo.memoId == null) {
-      await _memoDao.insert(memo);
-      return;
-    }
-    final existing = await _memoDao.fetchById(memo.memoId!);
-    if (existing != null) {
-      await _memoDao.update(memo);
-    } else {
-      await _memoDao.insert(memo);
-    }
-  }
 
+  ///
+  /// DELETE
+  ///
 
-
-
-  /// 削除
+  // メモデータ1件の削除：memoId指定
   Future<int> deleteMemo(int id) async {
     return await _memoDao.delete(id);
   }
 
 
-  ///
+
+  /// ========================
   /// Statusモデルの操作
-  ///
+  /// ========================
 
   ///
   /// READ
@@ -140,7 +145,7 @@ class MemoMgmtRepository {
     return await _statusDao.fetchAll();
   }
 
-  // 1件取得（ステータスIDで検索）
+  // ステータス1件の削除：statusId指定
   Future<Status> fetchStatusById(int statusId) async {
     return await _statusDao.fetchById(statusId);
   }

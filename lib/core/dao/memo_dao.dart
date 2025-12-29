@@ -1,17 +1,22 @@
 import '../../../../core/db/database_helper.dart';
-import '../model/memo_model.dart';
+import '../3_model/model/memo_model.dart';
 
 /// ===============================
-/// 💾 MemoDao（sqflite用）
+/// MemoDao（sqflite用）
 /// ===============================
-///
-/// memosテーブルへのCRUDを担当。
-///
+
 class MemoDao {
-  // テーブル名
+
+  /// テーブル名のセット
   static const tableName = 'memos';
 
-  /// 🟢 INSERT（追加）
+
+
+  ///
+  /// INSERT
+  ///
+
+  // 1件
   Future<int> insert(Memo memo) async {
     final db = await DatabaseHelper.instance.database;
     final data = memo.toMap()
@@ -20,7 +25,11 @@ class MemoDao {
     return await db.insert(tableName, data);
   }
 
-  /// 🔵 READ（全件取得）
+  ///
+  /// READ
+  ///
+
+  // 全件
   Future<List<Memo>> fetchAll() async {
     final db = await DatabaseHelper.instance.database;
     final result = await db.query(
@@ -30,7 +39,7 @@ class MemoDao {
     return result.map((e) => Memo.fromMap(e)).toList();
   }
 
-  /// 🔵 READ（ID指定で1件取得）
+  // 1件：メモID指定
   Future<Memo?> fetchById(int id) async {
     final db = await DatabaseHelper.instance.database;
     final result = await db.query(
@@ -44,7 +53,7 @@ class MemoDao {
     return Memo.fromMap(result.first);
   }
 
-  /// 🔵 READ（Status_id指定）
+  // 1件：ステータスID指定
   Future<List<Memo>> fetchByStatus(int statusId) async {
     final db = await DatabaseHelper.instance.database;
     final result = await db.query(
@@ -56,7 +65,11 @@ class MemoDao {
     return result.map((e) => Memo.fromMap(e)).toList();
   }
 
-  /// 🟠 UPDATE（更新）
+  ///
+  /// UPDATE
+  ///
+
+  // 1件：メモID指定
   Future<int> update(Memo memo) async {
     final db = await DatabaseHelper.instance.database;
     final data = memo.toMap()
@@ -70,7 +83,7 @@ class MemoDao {
     );
   }
 
-  /// ステータスID指定で一括更新
+  // 複数件：ステータスID指定
   Future<int> updateStatusByStatusId({
     required int fromStatusId,
     required int toStatusId,
@@ -86,7 +99,11 @@ class MemoDao {
   }
 
 
-  /// 🔴 DELETE（削除）
+  ///
+  /// DELETE
+  ///
+
+  // 1件：メモID指定
   Future<int> delete(int id) async {
     final db = await DatabaseHelper.instance.database;
     return await db.delete(

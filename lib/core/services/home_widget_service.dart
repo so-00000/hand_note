@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:home_widget/home_widget.dart';
 import '../../features/memo_mgmt/3_model/repository/memo_mgmt_repository.dart';
 import '../constants/status_color_mapper.dart';
-import '../model/memo_model.dart';
-import '../model/status_model.dart';
+import '../3_model/model/memo_model.dart';
+import '../3_model/model/status_model.dart';
 import '../utils/date_formatter.dart';
 import '../utils/log_util.dart';
 

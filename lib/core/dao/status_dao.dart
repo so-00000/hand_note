@@ -1,45 +1,27 @@
-import 'package:sqflite/sqflite.dart';
 import '../../../../core/db/database_helper.dart';
-import '../model/status_model.dart';
+import '../3_model/model/status_model.dart';
 
 /// ===============================
-/// 🎨 MemoStatusDao（sqflite用）
+/// StatusDao（sqflite用）
 /// ===============================
-///
-/// `status` テーブルのCRUDを担当。
-/// 固定ステータスとカスタムステータスを一元管理。
-///
+
 class StatusDao {
 
-  // テーブル名のセット
+  /// テーブル名のセット
   static const tableName = 'status';
 
 
 
+  ///
+  /// INSERT
+  ///
 
-  /// 🔍 全件取得（status_id昇順）
-  Future<List<Status>> fetchAll() async {
-
-    final db = await DatabaseHelper.instance.database;
-    final result = await db.query('status', orderBy: 'sort_no ASC');
-
-    return result.map((e) => Status.fromMap(e)).toList();
-  }
-
-  /// 🟢 追加（INSERT）
-
-  // 「最大+1のsort_no」取得
-  Future<int> getNextSortNo() async {
-    final db = await DatabaseHelper.instance.database;
-    final result = await db.rawQuery('SELECT COALESCE(MAX(sort_no), 0) + 1 AS next_no FROM status');
-    return (result.first['next_no'] as int?) ?? 1;
-  }
-
+  // 1件
   Future<int> insert(String name, String colorCode) async {
     final db = await DatabaseHelper.instance.database;
 
     // sort_no を決定
-    final nextSortNo = await getNextSortNo();
+    final nextSortNo = await getMaxSortNo() + 1;
 
     // データ生成
     final newStatus = Status(
@@ -53,8 +35,52 @@ class StatusDao {
     return await db.insert('status', data);
   }
 
+  // 最大sort_no取得
+  Future<int> getMaxSortNo() async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.rawQuery('SELECT COALESCE(MAX(sort_no), 0) AS next_no FROM status');
+    return (result.first['next_no'] as int?) ?? 1;
+  }
 
-  /// ✏️ 更新（UPDATE）
+
+
+  ///
+  /// READ
+  ///
+
+  // 全件（status_id昇順）
+  Future<List<Status>> fetchAll() async {
+
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.query('status', orderBy: 'sort_no ASC');
+
+    return result.map((e) => Status.fromMap(e)).toList();
+  }
+
+  // 1件：ステータスID指定
+  Future<Status> fetchById(int status_id) async {
+
+    // DB取得
+    final db = await DatabaseHelper.instance.database;
+
+    // 取得処理の呼び出し
+    final result = await db.query(
+      tableName,
+      where: 'status_id = ?',
+      whereArgs: [status_id],
+      limit: 1,
+    );
+
+    return Status.fromMap(result.first);
+  }
+
+
+
+  ///
+  /// UPDATE
+  ///
+
+  // 1件：ステータスID指定
   Future<int> update(Status status) async {
     final db = await DatabaseHelper.instance.database;
     final data = status.toMap()..removeWhere((k, v) => v == null);
@@ -83,10 +109,12 @@ class StatusDao {
     });
   }
 
-  /// ❌ 削除（DELETE）
+
+
   ///
-  /// ※ 固定ステータスはService側で削除制御する想定。
+  /// DELETE
   ///
+
   Future<int> delete(int status_id) async {
     final db = await DatabaseHelper.instance.database;
     return await db.delete(
@@ -94,22 +122,5 @@ class StatusDao {
       where: 'status_id = ?',
       whereArgs: [status_id],
     );
-  }
-
-  /// 1件取得（ステータスIDで検索）
-  Future<Status> fetchById(int status_id) async {
-
-    // DB取得
-    final db = await DatabaseHelper.instance.database;
-
-    // 取得処理の呼び出し
-    final result = await db.query(
-      tableName,
-      where: 'status_id = ?',
-      whereArgs: [status_id],
-      limit: 1,
-    );
-
-    return Status.fromMap(result.first);
   }
 }

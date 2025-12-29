@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hand_note/features/setting_mgmt/3_model/display_mode.dart';
-import '../../../core/model/status_model.dart';
+import '../../../core/3_model/model/status_model.dart';
 import '../../../core/services/home_widget_service.dart';
 import '../3_model/repository/setting_mgmt_repository.dart';
 
