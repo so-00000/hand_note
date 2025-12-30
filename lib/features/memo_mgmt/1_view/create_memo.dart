@@ -103,7 +103,7 @@ class TaskInputArea extends StatelessWidget {
         ),
 
         decoration: InputDecoration(
-          hintText: 'メモを作成入力しましょう！',
+          hintText: 'メモを入力しましょう！',
           hintStyle: theme.textTheme.bodySmall?.copyWith(fontSize: 16),
           border: InputBorder.none,
         ),

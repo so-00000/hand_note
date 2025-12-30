@@ -27,7 +27,7 @@ void main() async {
   }
 
   // ✅ （ホームウィジェット → アプリ）初回同期（Cold Start対応）
-  await HomeWidgetService.syncAppFromWidget();
+  await HomeWidgetService.syncAppFromHomeWidget();
 
   // ✅ アプリ起動
   runApp(
@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     // ✅ Warm Start（ホームウィジェットをタップして復帰）
     HomeWidget.widgetClicked.listen((Uri? uri) async {
       // 🔸 同期実行（非同期で十分）
-      unawaited(HomeWidgetService.syncAppFromWidget());
+      unawaited(HomeWidgetService.syncAppFromHomeWidget());
 
       if (uri != null && uri.queryParameters['MEMO_ID'] != null) {
         final memoId = int.tryParse(uri.queryParameters['MEMO_ID']!);
@@ -102,7 +102,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       print('📲 App resumed → 同期実行');
 
       // 1️⃣ 同期を待ってからリロード
-      await HomeWidgetService.syncAppFromWidget();
+      await HomeWidgetService.syncAppFromHomeWidget();
 
       // 2️⃣ 一覧再読込（最新DB内容でUI更新）
       final vm = Provider.of<ShowMemoListVM>(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/status_color_mapper.dart';
-import '../../../../core/3_model/model/status_model.dart';
+import '../../../../../core/constants/status_color_mapper.dart';
+import '../../../../../core/3_model/model/status_model.dart';
 
 class StatusListModal extends StatelessWidget {
   final List<Status> statuses;

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../features/memo_mgmt/1_view/create_memo.dart';
 import '../../features/memo_mgmt/1_view/show_memo_list.dart';
-import '../../features/setting_mgmt/1_view/mgmt_settings.dart';
+import '../../features/setting_mgmt/1_view/widgets/mgmt_settings.dart';
 import '../widgets/bottom_tab_bar.dart';
 import '../widgets/header_bar.dart';
 import '../services/memo_launch_handler.dart';

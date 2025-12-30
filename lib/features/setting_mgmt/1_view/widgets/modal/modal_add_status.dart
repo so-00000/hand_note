@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/status_color_mapper.dart';
-import '../../2_view_model/settings_view_model.dart';
+import '../../../../../core/constants/status_color_mapper.dart';
+import '../../../2_view_model/settings_view_model.dart';
 import 'package:provider/provider.dart';
 
 class StatusAddModal extends StatefulWidget {

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hand_note/features/setting_mgmt/3_model/display_mode.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/theme/theme_notifier.dart';
-import '../../../../core/ui/styles/box_decorations.dart';
-import '../../2_view_model/settings_view_model.dart';
+import '../../../../../core/theme/theme_notifier.dart';
+import '../../../../../core/ui/styles/box_decorations.dart';
+import '../../../2_view_model/settings_view_model.dart';
 
 /// 🌓 表示モード切替セクション
 /// - Light / Dark / Auto のテーマモードを切り替える
 /// - ViewModel と ThemeNotifier を連携
-class DisplayModeSelector extends StatelessWidget {
-  const DisplayModeSelector({super.key});
+class DisplayModeSection extends StatelessWidget {
+  const DisplayModeSection({super.key});
 
   @override
   Widget build(BuildContext context) {

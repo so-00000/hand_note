@@ -14,15 +14,18 @@ import '../utils/log_util.dart';
 /// - Memo と Status を分離管理
 /// - Flutter → ネイティブ、ネイティブ → Flutter 双方向同期対応
 /// - CRUD後にウィジェット再描画
+///
+/// SP：SharedPreferences
+///
 class HomeWidgetService {
   static const String _memoListKey = 'memo_list';
   static const String _statusListKey = 'status_list';
   static const int _maxDisplayCount = 100;
   static const String _providerNm = 'home_widget.MemoWidgetProvider';
 
-  // ============================
+  /// ============================
   // 🔹 アプリ → ホームウィジェット 同期
-  // ============================
+  /// ============================
   ///
   /// アプリ（Flutter側）の最新データをホームウィジェットへ反映する。
   /// - メモ／ステータス情報をJSON化してSharedPreferencesへ保存
@@ -35,22 +38,24 @@ class HomeWidgetService {
     final memoList = await repo.fetchAllMemos();
     final statusList = await repo.fetchAllStatuses();
 
-    // 🪵 ログ出力：同期対象の全データ
+    // ログ出力：同期対象の全データ
     logList('MEMO LIST', memoList);
     logList('STATUS LIST', statusList);
 
-    // 🔸 SharedPreferencesへ書き込み（ネイティブ層へ送信）
+    // SPへ保存
     await _saveMemoList(memoList);
     await _saveStatusList(statusList);
 
-    // 🔸 ホームウィジェットの再描画要求（ネイティブ側でUI更新）
+    // ホームウィジェットの再描画リクエスト
     await _update();
 
-    // 🪵 SharedPreferencesの中身を確認
+    // ログ出力：全SP
     await logSPData("SP書き込み後");
   }
 
+  /// MemoデータのSP保存
   static Future<void> _saveMemoList(List<Memo> memos) async {
+
     // 最大表示件数分のみ送信（パフォーマンス最適化）
     final limited = memos.take(_maxDisplayCount).toList();
 
@@ -64,11 +69,13 @@ class HomeWidgetService {
       'prevStatusId': m.statusId ?? '',
     }).toList();
 
-    // 🧭 AndroidネイティブのSharedPreferencesへ保存
+    // AndroidネイティブのSharedPreferencesへ保存
     await HomeWidget.saveWidgetData(_memoListKey, jsonEncode(jsonList));
   }
 
+  /// Statusデータ（全件）のSP保存
   static Future<void> _saveStatusList(List<Status> statuses) async {
+
     // JSON形式に変換
     final jsonList = statuses.map((s) {
       final hexColor = getColorCd(s.statusColor);
@@ -80,25 +87,27 @@ class HomeWidgetService {
       };
     }).toList();
 
-    // 🧭 AndroidネイティブのSharedPreferencesへ保存
+    // AndroidネイティブのSharedPreferencesへ保存
     await HomeWidget.saveWidgetData(_statusListKey, jsonEncode(jsonList));
   }
 
+  /// ホームウィジェット再描画リクエスト
   static Future<void> _update() async {
-    // 📲 ホームウィジェットを即時再描画（AppWidgetProvider更新）
     await HomeWidget.updateWidget(name: _providerNm);
   }
 
-  // ============================
-  // 🔹 ホームウィジェット → アプリ 同期
-  // ============================
+
+
+  /// ============================
+  /// 🔹 ホームウィジェット → アプリ 同期
+  /// ============================
   ///
   /// ホームウィジェット（SharedPreferences）上のデータを取得し、
   /// アプリDB（SQLite）へ反映する。
   /// - 既存レコードがあれば UPDATE、なければ INSERT（全件洗い替え）
   /// - 変更対象は Memo のみ（Status はマスタ固定）
   ///
-  static Future<void> syncAppFromWidget() async {
+  static Future<void> syncAppFromHomeWidget() async {
     try {
       // 🧭 SharedPreferences（Androidネイティブ）からデータ取得
       // ※ statusテーブルは、アプリへの同期は不要
@@ -145,16 +154,6 @@ class HomeWidgetService {
   // 🔹 共通ユーティリティ
   // ============================
 
-
-  // static Future<dynamic> getData(String key) async {
-  //   final raw = await HomeWidget.getWidgetData(key);
-  //   if (raw == null) return null;
-  //   try {
-  //     return jsonDecode(raw);
-  //   } catch (_) {
-  //     return raw;
-  //   }
-  // }
 
   static Future<void> clearWidgetData() async {
     await HomeWidget.saveWidgetData(_memoListKey, '');

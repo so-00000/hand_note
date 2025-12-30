@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/constants/status_codes.dart';
-import '../../../../core/constants/status_color_mapper.dart';
-import '../../2_view_model/settings_view_model.dart';
-import 'status_card.dart';
-import 'modal_add_status.dart';
+import '../../../../../core/constants/status_codes.dart';
+import '../../../../../core/constants/status_color_mapper.dart';
+import '../../../2_view_model/settings_view_model.dart';
+import '../component/status_card.dart';
+import '../modal/modal_add_status.dart';
 
 /// 🎨 ステータス一覧セクション
 /// - 並び替え対応（ReorderableListView）

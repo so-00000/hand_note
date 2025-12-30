@@ -19,15 +19,4 @@ extension DisplayModeExtension on DisplayMode {
         return ThemeMode.system;
     }
   }
-
-  // /// 保存用文字列（SharedPreferences / DB 等）
-  // String get value => name;
-  //
-  // /// 保存値から DisplayMode を復元
-  // static DisplayMode fromValue(String value) {
-  //   return DisplayMode.values.firstWhere(
-  //         (e) => e.name == value,
-  //     orElse: () => DisplayMode.auto,
-  //   );
-  // }
 }
