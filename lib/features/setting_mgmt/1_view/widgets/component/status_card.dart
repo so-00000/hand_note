@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hand_note/features/setting_mgmt/1_view/widgets/modal_status_color.dart';
-import '../../../../core/constants/status_color_mapper.dart';
-import '../../../../core/ui/styles/box_decorations.dart';
-import '../../../../core/ui/styles/status_color_circle.dart';
+import 'package:hand_note/features/setting_mgmt/1_view/widgets/modal/modal_status_color.dart';
+import '../../../../../core/constants/status_color_mapper.dart';
+import '../../../../../core/ui/styles/box_decorations.dart';
+import '../../../../../core/ui/styles/status_color_circle.dart';
 
 /// ステータス項目カード
 /// - タップ：名前編集モードに切替

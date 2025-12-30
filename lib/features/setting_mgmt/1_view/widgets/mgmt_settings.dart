@@ -1,22 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:hand_note/features/setting_mgmt/1_view/widgets/app_info_section.dart';
-import 'package:hand_note/features/setting_mgmt/1_view/widgets/display_mode_selector.dart';
-import 'package:hand_note/features/setting_mgmt/1_view/widgets/status_list_section.dart';
+import 'package:hand_note/features/setting_mgmt/1_view/widgets/component/app_info_section.dart';
+import 'package:hand_note/features/setting_mgmt/1_view/widgets/component/display_mode_section.dart';
+import 'package:hand_note/features/setting_mgmt/1_view/widgets/component/status_list_section.dart';
 import 'package:provider/provider.dart';
-import '../../../core/ui/styles/insets.dart';
-import '../2_view_model/settings_view_model.dart';
+import '../../../../core/ui/styles/insets.dart';
+import '../../2_view_model/settings_view_model.dart';
 
 
-/// ⚙️ 設定画面（ローカルDB版 / sqflite）
-///
-/// - 各セクションはこの画面専用の `_SettingsSection` でラップ
-/// - タイトル＋コンテンツをセットで扱い、見た目を統一
+
+/// ========================
+/// Class
+/// ========================
+
 class Settings extends StatefulWidget {
+
+  ///
+  /// フィールド
+  ///
+
+
+
+  /// コンストラクタ
   const Settings({super.key});
 
+  /// Stateインスタンスの生成
   @override
   State<Settings> createState() => _SettingsState();
 }
+
+
+
+/// ========================
+/// State
+/// ========================
 
 class _SettingsState extends State<Settings> {
   @override
@@ -27,6 +43,11 @@ class _SettingsState extends State<Settings> {
     });
   }
 
+
+
+  /// ========================
+  /// UIビルド
+  /// ========================
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -46,7 +67,7 @@ class _SettingsState extends State<Settings> {
               // 表示モードセクション
               _SettingsSection(
                 title: 'Display:',
-                child: DisplayModeSelector(),
+                child: DisplayModeSection(),
               ),
 
               // ステータスセクション
@@ -69,9 +90,14 @@ class _SettingsState extends State<Settings> {
   }
 }
 
-/// 📦 設定画面専用セクションラッパー
+
+/// ========================
+/// private Widget
+/// ========================
+
+
+/// セクションラッパー
 /// - タイトルと中身をまとめて1ブロック化
-///
 class _SettingsSection extends StatelessWidget {
   final String title;
   final Widget child;
@@ -84,8 +110,12 @@ class _SettingsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Padding(
+
+      // セクション間の余白
       padding: const EdgeInsets.only(bottom: 32),
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

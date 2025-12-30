@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../core/3_model/model/memo_model.dart';
-import '../../../../core/3_model/model/status_model.dart';
-import '../../../../core/ui/styles/box_decorations.dart';
-import '../../../../core/ui/styles/status_color_circle.dart';
-import '../../../../core/utils/date_formatter.dart';
+import '../../../../../core/3_model/model/memo_model.dart';
+import '../../../../../core/3_model/model/status_model.dart';
+import '../../../../../core/ui/styles/box_decorations.dart';
+import '../../../../../core/ui/styles/status_color_circle.dart';
+import '../../../../../core/utils/date_formatter.dart';
 
 
 /// ===============================
@@ -122,14 +122,13 @@ class _MemoCardState extends State<MemoCard> {
     final status = widget.status;
     final dateStr = formatDateTime(memo.updatedAt ?? memo.createdAt);
 
-
-
     return Dismissible(
       key: ValueKey(memo.memoId),
       direction: DismissDirection.endToStart,
 
       /// swipe時の背景
       background: Container(
+        margin: const EdgeInsets.only(bottom: 12),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
@@ -138,6 +137,7 @@ class _MemoCardState extends State<MemoCard> {
         ),
         child: Icon(Icons.delete, color: theme.colorScheme.onError, size: 28),
       ),
+
       onDismissed: (_) => widget.onDelete(),
 
 

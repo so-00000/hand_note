@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/ui/styles/box_decorations.dart';
+import '../../../../../core/ui/styles/box_decorations.dart';
 
 class MemoSearchBar extends StatelessWidget {
   final TextEditingController controller;
