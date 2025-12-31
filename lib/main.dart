@@ -15,6 +15,8 @@ import 'features/setting_mgmt/2_view_model/settings_view_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  await HomeWidget.setAppGroupId('group.com.example.handNote');
 
   // ✅ Cold Start（ホームウィジェット経由で起動）
   final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
