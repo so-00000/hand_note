@@ -3,10 +3,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:home_widget/home_widget.dart';
 import '../../features/memo_mgmt/3_model/repository/memo_mgmt_repository.dart';
-import '../constants/status_color_mapper.dart';
+import '../HomeWidgetMapper.dart';
 import '../3_model/model/memo_model.dart';
 import '../3_model/model/status_model.dart';
-import '../utils/date_formatter.dart';
 import '../utils/log_util.dart';
 
 /// 🏠 HomeWidgetService
@@ -20,7 +19,7 @@ import '../utils/log_util.dart';
 class HomeWidgetService {
   static const String _memoListKey = 'memo_list';
   static const String _statusListKey = 'status_list';
-  static const int _maxDisplayCount = 100;
+  static const int _maxDisplayCount = 4;
   static const String _providerNm = 'home_widget.MemoWidgetProvider';
 
   /// ============================
@@ -53,41 +52,39 @@ class HomeWidgetService {
     await logSPData("SP書き込み後");
   }
 
-  /// MemoデータのSP保存
+  /// Memoデータの保存
   static Future<void> _saveMemoList(List<Memo> memos) async {
 
-    // 最大表示件数分のみ送信（パフォーマンス最適化）
-    final limited = memos.take(_maxDisplayCount).toList();
+    // 最大表示件数分のみ送信
+    final limited = memos
+      ..sort((a, b) => b.updatedAt!.compareTo(a.updatedAt!))
+      ..take(_maxDisplayCount)
+          .toList();
 
-    // JSON形式に変換
-    final jsonList = limited.map((m) => {
-      'id': m.memoId ?? '',
-      'content': m.content ?? '',
-      'createdAt': formatDateTime(m.createdAt),
-      'updatedAt': formatDateTime(m.updatedAt),
-      'statusId': m.statusId ?? '',
-      'prevStatusId': m.statusId ?? '',
-    }).toList();
+    // ドメインデータ ➡ DTO 変換
+    final dtoList = limited
+        .map(HomeWidgetMapper.toMemoDto)
+        .toList();
 
-    // AndroidネイティブのSharedPreferencesへ保存
+    // DTO ➡ JSON形式　変換
+    final jsonList = dtoList.map((dto) => dto.toJson()).toList();
+
+    // SharedPreferences(Android) / App Group(iOS)へ保存
     await HomeWidget.saveWidgetData(_memoListKey, jsonEncode(jsonList));
   }
 
-  /// Statusデータ（全件）のSP保存
+  /// Statusデータ（全件）の保存
   static Future<void> _saveStatusList(List<Status> statuses) async {
 
-    // JSON形式に変換
-    final jsonList = statuses.map((s) {
-      final hexColor = getColorCd(s.statusColor);
-      return {
-        'statusId': s.statusId ?? '',
-        'sortNo': s.sortNo ?? '',
-        'statusNm': s.statusNm,
-        'statusColor': hexColor,
-      };
-    }).toList();
+    // ドメインデータ ➡ DTO 変換
+    final dtoList = statuses
+        .map(HomeWidgetMapper.toStatusDto)
+        .toList();
 
-    // AndroidネイティブのSharedPreferencesへ保存
+    // DTO ➡ JSON形式　変換
+    final jsonList = dtoList.map((dto) => dto.toJson()).toList();
+
+    // SharedPreferences(Android) / App Group(iOS)へ保存
     await HomeWidget.saveWidgetData(_statusListKey, jsonEncode(jsonList));
   }
 
