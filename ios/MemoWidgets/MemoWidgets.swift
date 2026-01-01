@@ -10,11 +10,19 @@ import SwiftUI
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), emoji: "😀")
+        SimpleEntry(
+            date: Date(),
+            title: "買い物メモ",
+            content: "牛乳、卵、パンを買う"
+        )
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), emoji: "😀")
+        let entry = SimpleEntry(
+            date: Date(),
+            title: "買い物メモ",
+            content: "牛乳、卵、パンを買う"
+        )
         completion(entry)
     }
 
@@ -25,7 +33,11 @@ struct Provider: TimelineProvider {
         let currentDate = Date()
         for hourOffset in 0 ..< 5 {
             let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, emoji: "😀")
+            let entry = SimpleEntry(
+                date: entryDate,
+                title: "買い物メモ",
+                content: "牛乳、卵、パンを買う"
+            )
             entries.append(entry)
         }
 
@@ -40,20 +52,29 @@ struct Provider: TimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let emoji: String
+    let title: String
+    let content: String
 }
 
 struct MemoWidgetsEntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
-        VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
-
-            Text("Emoji:")
-            Text(entry.emoji)
+        VStack(alignment: .leading, spacing: 6) {
+            Text(entry.title)
+                .font(.headline)
+                .lineLimit(1)
+            Text(entry.content)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(3)
         }
+        .padding(12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
     }
 }
 
@@ -79,6 +100,14 @@ struct MemoWidgets: Widget {
 #Preview(as: .systemSmall) {
     MemoWidgets()
 } timeline: {
-    SimpleEntry(date: .now, emoji: "😀")
-    SimpleEntry(date: .now, emoji: "🤩")
+    SimpleEntry(
+        date: .now,
+        title: "買い物メモ",
+        content: "牛乳、卵、パンを買う"
+    )
+    SimpleEntry(
+        date: .now,
+        title: "読書メモ",
+        content: "SwiftUIのWidgetKitの章を読む"
+    )
 }
