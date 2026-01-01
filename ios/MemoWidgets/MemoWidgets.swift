@@ -62,6 +62,16 @@ struct Provider: TimelineProvider {
 
         let memos = decodeMemos(from: memoJson)
         let statuses = decodeStatuses(from: statusJson)
+        print("🧩 [MemoWidgets] memos raw: \(memoJson)")
+        print("🧩 [MemoWidgets] memos decoded count: \(memos.count)")
+        for memo in memos {
+            print("🧩 [MemoWidgets] memo id=\(memo.id) statusId=\(memo.statusId) content=\(memo.content)")
+        }
+        print("🧩 [MemoWidgets] statuses raw: \(statusJson)")
+        print("🧩 [MemoWidgets] statuses decoded count: \(statuses.count)")
+        for status in statuses {
+            print("🧩 [MemoWidgets] status id=\(status.id) name=\(status.name) color=\(status.colorHex)")
+        }
         return SimpleEntry(date: date, memos: memos, statuses: statuses)
     }
 
