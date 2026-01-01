@@ -11,6 +11,7 @@ import SwiftUI
 private let appGroupId = "group.com.ttperry.handnote"
 private let memoListKey = "memo_list"
 private let statusListKey = "status_list"
+private let maxDisplayCount = 4
 
 struct MemoWidgetMemo: Identifiable {
     let id: Int
@@ -102,15 +103,17 @@ struct MemoWidgetsEntryView: View {
     }
 
     var body: some View {
+        let displayedMemos = Array(entry.memos.prefix(maxDisplayCount))
+
         VStack(alignment: .leading, spacing: 12) {
-            ForEach(entry.memos) { memo in
+            ForEach(displayedMemos) { memo in
                 MemoCardView(
                     memo: memo,
                     status: statusMap[memo.statusId]
                 )
             }
 
-            if entry.memos.isEmpty {
+            if displayedMemos.isEmpty {
                 Text("メモがありません")
                     .font(.footnote)
                     .foregroundColor(.secondary)
