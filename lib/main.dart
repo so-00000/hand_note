@@ -15,8 +15,11 @@ import 'features/setting_mgmt/2_view_model/settings_view_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  await HomeWidget.setAppGroupId('group.com.example.handNote');
+
+
+  debugPrint('📤 Saving memo_list to AppGroup');
+
+  await HomeWidget.setAppGroupId('group.com.ttperry.handnote');
 
   // ✅ Cold Start（ホームウィジェット経由で起動）
   final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
@@ -29,7 +32,7 @@ void main() async {
   }
 
   // ✅ （ホームウィジェット → アプリ）初回同期（Cold Start対応）
-  await HomeWidgetService.syncAppFromHomeWidget();
+    // await HomeWidgetService.syncAppFromHomeWidget();
 
   // ✅ アプリ起動
   runApp(
