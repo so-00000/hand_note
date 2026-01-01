@@ -11,7 +11,7 @@ import SwiftUI
 private let appGroupId = "group.com.ttperry.handnote"
 private let memoListKey = "memo_list"
 private let statusListKey = "status_list"
-private let maxDisplayCount = 4
+private let maxDisplayCount = 3
 
 struct MemoWidgetMemo: Identifiable {
     let id: Int
@@ -62,6 +62,16 @@ struct Provider: TimelineProvider {
 
         let memos = decodeMemos(from: memoJson)
         let statuses = decodeStatuses(from: statusJson)
+        print("🧩 [MemoWidgets] memos raw: \(memoJson)")
+        print("🧩 [MemoWidgets] memos decoded count: \(memos.count)")
+        for memo in memos {
+            print("🧩 [MemoWidgets] memo id=\(memo.id) statusId=\(memo.statusId) content=\(memo.content)")
+        }
+        print("🧩 [MemoWidgets] statuses raw: \(statusJson)")
+        print("🧩 [MemoWidgets] statuses decoded count: \(statuses.count)")
+        for status in statuses {
+            print("🧩 [MemoWidgets] status id=\(status.id) name=\(status.name) color=\(status.colorHex)")
+        }
         return SimpleEntry(date: date, memos: memos, statuses: statuses)
     }
 
@@ -104,7 +114,7 @@ struct MemoWidgetsEntryView: View {
     var body: some View {
         let displayedMemos = Array(entry.memos.prefix(maxDisplayCount))
 
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 6) {
             ForEach(displayedMemos) { memo in
                 MemoCardView(
                     memo: memo,
@@ -132,24 +142,24 @@ struct MemoCardView: View {
         let statusColor = Color(hex: status?.colorHex ?? "#4CAF50")
         let statusName = status?.name ?? "未完了"
 
-        HStack(spacing: 12) {
+        HStack(spacing: 8) {
             Circle()
                 .fill(statusColor)
-                .frame(width: 12, height: 12)
+                .frame(width: 10, height: 10)
 
             Text(memo.content)
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 13, weight: .medium))
                 .foregroundColor(.primary)
-                .lineLimit(2)
+                .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(statusName)
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: 10, weight: .semibold))
                 .foregroundColor(statusColor)
                 .lineLimit(1)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
