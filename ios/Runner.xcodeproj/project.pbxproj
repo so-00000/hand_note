@@ -15,7 +15,6 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		CED0E8B52F100000003889C5 /* MemoHomeWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CED0E8982F054F10003889C5 /* MemoHomeWidgetExtension.appex */; };
 		CED0E89B2F054F10003889C5 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CED0E89A2F054F10003889C5 /* WidgetKit.framework */; };
 		CED0E89D2F054F10003889C5 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CED0E89C2F054F10003889C5 /* SwiftUI.framework */; };
 		CED0E8F12F067A3F003889C5 /* MemoHomeWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = CED0E8982F054F10003889C5 /* MemoHomeWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -56,7 +55,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				CED0E8B52F100000003889C5 /* MemoHomeWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -860,7 +858,7 @@
 				INFOPLIST_FILE = MemoHomeWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MemoHomeWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -905,7 +903,7 @@
 				INFOPLIST_FILE = MemoHomeWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MemoHomeWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -947,7 +945,7 @@
 				INFOPLIST_FILE = MemoHomeWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MemoHomeWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
