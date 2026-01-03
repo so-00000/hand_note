@@ -9,6 +9,7 @@ import 'core/services/memo_launch_handler.dart';
 import 'core/theme/app_themes.dart';
 import 'core/theme/theme_notifier.dart';
 
+import 'features/memo_mgmt/1_view/main_page.dart';
 import 'features/memo_mgmt/2_view_model/create_memo_view_model.dart';
 import 'features/memo_mgmt/2_view_model/show_memo_list_view_model.dart';
 import 'features/setting_mgmt/2_view_model/settings_view_model.dart';
@@ -129,7 +130,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       theme: AppThemes.lightTheme,
       darkTheme: AppThemes.darkTheme,
       themeMode: themeNotifier.themeMode,
-      home: const MainTabScreen(initialTabIndex: 0),
+      home: const MainPage(),
     );
   }
 }
