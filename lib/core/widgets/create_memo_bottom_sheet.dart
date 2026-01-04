@@ -25,6 +25,7 @@ class _CreateMemoBottomSheetState extends State<CreateMemoBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final sheetHeight = MediaQuery.of(context).size.height * 0.62;
 
     return SafeArea(
       top: false,
@@ -37,45 +38,62 @@ class _CreateMemoBottomSheetState extends State<CreateMemoBottomSheet> {
               top: Radius.circular(20),
             ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                transitionBuilder: (child, animation) {
-                  final offsetAnimation = Tween<Offset>(
-                    begin: const Offset(0.1, 0),
-                    end: Offset.zero,
-                  ).animate(animation);
-                  return SlideTransition(
-                    position: offsetAnimation,
-                    child: FadeTransition(opacity: animation, child: child),
-                  );
-                },
-                child: _sheetMode == _SheetMode.memo
-                    ? _MemoSheetContent(
-                        key: const ValueKey('memo'),
-                        memoController: _memoController,
-                        repeatEnabled: _repeatEnabled,
-                        onRepeatChanged: (v) =>
-                            setState(() => _repeatEnabled = v),
-                        category: _selectedCategory,
-                        onCategoryTap: _showCategorySheet,
-                        onCancel: () => Navigator.pop(context),
-                        onAdd:
-                            _memoController.text.isEmpty ? null : _onAdd,
-                      )
-                    : _CategorySheetContent(
-                        key: const ValueKey('category'),
-                        categories: _categories,
-                        selectedCategory: _selectedCategory,
-                        onBack: _showMemoSheet,
-                        onSelect: _selectCategory,
-                      ),
-              ),
-            ],
+          child: SizedBox(
+            height: sheetHeight,
+            child: Column(
+              children: [
+                _SheetHeader(
+                  leadingLabel:
+                      _sheetMode == _SheetMode.memo ? 'Cancel' : 'Back',
+                  onLeadingTap: _sheetMode == _SheetMode.memo
+                      ? () => Navigator.pop(context)
+                      : _showMemoSheet,
+                  title:
+                      _sheetMode == _SheetMode.memo ? '新規メモ' : 'カテゴリ',
+                  trailingLabel: _sheetMode == _SheetMode.memo ? 'Add' : null,
+                  onTrailingTap: _sheetMode == _SheetMode.memo &&
+                          _memoController.text.isNotEmpty
+                      ? _onAdd
+                      : null,
+                ),
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    transitionBuilder: (child, animation) {
+                      final offsetAnimation = Tween<Offset>(
+                        begin: const Offset(0.1, 0),
+                        end: Offset.zero,
+                      ).animate(animation);
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: _sheetMode == _SheetMode.memo
+                        ? _MemoSheetContent(
+                            key: const ValueKey('memo'),
+                            memoController: _memoController,
+                            repeatEnabled: _repeatEnabled,
+                            onRepeatChanged: (v) =>
+                                setState(() => _repeatEnabled = v),
+                            category: _selectedCategory,
+                            onCategoryTap: _showCategorySheet,
+                          )
+                        : _CategorySheetContent(
+                            key: const ValueKey('category'),
+                            categories: _categories,
+                            selectedCategory: _selectedCategory,
+                            onSelect: _selectCategory,
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -109,8 +127,6 @@ class _MemoSheetContent extends StatelessWidget {
   final ValueChanged<bool> onRepeatChanged;
   final _CategoryItem category;
   final VoidCallback onCategoryTap;
-  final VoidCallback onCancel;
-  final VoidCallback? onAdd;
 
   const _MemoSheetContent({
     super.key,
@@ -119,33 +135,27 @@ class _MemoSheetContent extends StatelessWidget {
     required this.onRepeatChanged,
     required this.category,
     required this.onCategoryTap,
-    required this.onCancel,
-    required this.onAdd,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _Header(
-          onCancel: onCancel,
-          onAdd: onAdd,
-        ),
-        const SizedBox(height: 12),
-        _MemoInputCard(controller: memoController),
-        const SizedBox(height: 12),
-        _RepeatRow(
-          value: repeatEnabled,
-          onChanged: onRepeatChanged,
-        ),
-        const SizedBox(height: 12),
-        _ListSelectRow(
-          category: category,
-          onTap: onCategoryTap,
-        ),
-        const SizedBox(height: 24),
-      ],
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(top: 12, bottom: 24),
+      child: Column(
+        children: [
+          _MemoInputCard(controller: memoController),
+          const SizedBox(height: 12),
+          _RepeatRow(
+            value: repeatEnabled,
+            onChanged: onRepeatChanged,
+          ),
+          const SizedBox(height: 12),
+          _ListSelectRow(
+            category: category,
+            onTap: onCategoryTap,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -153,26 +163,21 @@ class _MemoSheetContent extends StatelessWidget {
 class _CategorySheetContent extends StatelessWidget {
   final List<_CategoryItem> categories;
   final _CategoryItem selectedCategory;
-  final VoidCallback onBack;
   final ValueChanged<_CategoryItem> onSelect;
 
   const _CategorySheetContent({
     super.key,
     required this.categories,
     required this.selectedCategory,
-    required this.onBack,
     required this.onSelect,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
-        _CategoryHeader(onBack: onBack),
-        Flexible(
+        Expanded(
           child: ListView.separated(
-            shrinkWrap: true,
             padding: const EdgeInsets.symmetric(vertical: 12),
             itemCount: categories.length,
             separatorBuilder: (_, __) => const SizedBox(height: 8),
@@ -191,10 +196,20 @@ class _CategorySheetContent extends StatelessWidget {
   }
 }
 
-class _CategoryHeader extends StatelessWidget {
-  final VoidCallback onBack;
+class _SheetHeader extends StatelessWidget {
+  final String leadingLabel;
+  final VoidCallback onLeadingTap;
+  final String title;
+  final String? trailingLabel;
+  final VoidCallback? onTrailingTap;
 
-  const _CategoryHeader({required this.onBack});
+  const _SheetHeader({
+    required this.leadingLabel,
+    required this.onLeadingTap,
+    required this.title,
+    required this.trailingLabel,
+    required this.onTrailingTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -208,129 +223,46 @@ class _CategoryHeader extends StatelessWidget {
         children: [
           CupertinoButton(
             padding: EdgeInsets.zero,
-            onPressed: onBack,
-            child: const Text(
-              'Back',
+            onPressed: onLeadingTap,
+            child: Text(
+              leadingLabel,
               style: TextStyle(
                 color: Color(0xFF0C79FE),
                 fontSize: 17,
               ),
             ),
           ),
-          const Expanded(
+          Expanded(
             child: Text(
-              'カテゴリ',
+              title,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          const SizedBox(width: 56),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _showCategorySheet() async {
-    final selected = await showGeneralDialog<_CategoryItem>(
-      context: context,
-      barrierLabel: 'Category',
-      barrierDismissible: true,
-      barrierColor: Colors.black54,
-      transitionDuration: const Duration(milliseconds: 240),
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return Align(
-          alignment: Alignment.centerRight,
-          child: Material(
-            color: Colors.white,
-            child: SafeArea(
-              left: false,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.78,
-                child: _CategorySelectSheet(
-                  categories: _categories,
-                  selected: _selectedCategory,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final offsetAnimation = Tween<Offset>(
-          begin: const Offset(1, 0),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
-        return SlideTransition(position: offsetAnimation, child: child);
-      },
-    );
-
-    if (selected != null && selected != _selectedCategory) {
-      setState(() => _selectedCategory = selected);
-    }
-  }
-}
-
-
-class _Header extends StatelessWidget {
-  final VoidCallback onCancel;
-  final VoidCallback? onAdd;
-
-  const _Header({
-    required this.onCancel,
-    required this.onAdd,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: const BoxDecoration(
-        color: Color(0xFFE6E5EF),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: onCancel,
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  color: Color(0xFF0C79FE),
-                  fontSize: 17,
-                ),
-              ),
-            ),
-          ),
-          const Text(
-            '新規メモ',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: onAdd,
-              child: Text(
-                'Add',
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
-                  color: onAdd == null
-                      ? const Color(0xFFB6B6B9)
-                      : const Color(0xFF0C79FE),
-                ),
-              ),
-            ),
+          SizedBox(
+            width: 56,
+            child: trailingLabel == null
+                ? null
+                : Align(
+                    alignment: Alignment.centerRight,
+                    child: CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: onTrailingTap,
+                      child: Text(
+                        trailingLabel!,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                          color: onTrailingTap == null
+                              ? const Color(0xFFB6B6B9)
+                              : const Color(0xFF0C79FE),
+                        ),
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
