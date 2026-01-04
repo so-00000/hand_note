@@ -1,3 +1,3 @@
 class Insets {
-  static const safePadding = 20.0;
+  static const safePadding = 16.0;
 }

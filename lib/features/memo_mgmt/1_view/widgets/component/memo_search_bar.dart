@@ -19,11 +19,12 @@ class MemoSearchBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Container(
+        height: 38,
         decoration: textBoxDecoration(theme),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: TextField(
           controller: controller,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
+          style: const TextStyle(color: Colors.white, fontSize: 1),
           decoration: const InputDecoration(
             icon: Icon(Icons.search, color: Colors.white54),
             hintText: 'Search',

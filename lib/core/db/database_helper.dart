@@ -8,7 +8,7 @@ class DatabaseHelper {
   static Database? _database;
   DatabaseHelper._init();
 
-  final dbVer = 25; // ✅ 最新バージョン
+  final dbVer = 26; // ✅ 最新バージョン
 
   //
   // 🔌 DB接続
@@ -39,7 +39,8 @@ class DatabaseHelper {
   // 🧩 テーブル作成
   //
   Future _createDB(Database db, int version) async {
-    // 🎨 ステータステーブル
+
+    // ステータステーブル
     await db.execute('''
       CREATE TABLE status (
         status_id   INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,11 +50,21 @@ class DatabaseHelper {
       );
     ''');
 
-    // 🗒️ メモテーブル
+    // カテゴリテーブル
+    await db.execute('''
+      CREATE TABLE category (
+        category_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+        sort_no     INTEGER NOT NULL,
+        category_nm   TEXT    NOT NULL,
+      );
+    ''');
+
+    // メモテーブル
     await db.execute('''
       CREATE TABLE memos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         content TEXT NOT NULL,
+        category_id INTEGER NOT NULL DEFAULT 0,
         status_id INTEGER NOT NULL DEFAULT 2,
         created_at TEXT NOT NULL,
         updated_at TEXT,
@@ -79,6 +90,7 @@ class DatabaseHelper {
     if (oldVersion < dbVer) {
       await db.execute('DROP TABLE IF EXISTS memos');
       await db.execute('DROP TABLE IF EXISTS status');
+      await db.execute('DROP TABLE IF EXISTS category');
       await _createDB(db, newVersion);
     }
   }

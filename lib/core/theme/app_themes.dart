@@ -97,7 +97,7 @@
         // タイトル用
         titleLarge: TextStyle(
           color: AppColors.light.textTitle,
-          fontSize: 20,
+          fontSize: 24,
           fontWeight: FontWeight.bold,
         ),
 
