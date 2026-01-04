@@ -232,6 +232,45 @@ class _CategoryHeader extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _showCategorySheet() async {
+    final selected = await showGeneralDialog<_CategoryItem>(
+      context: context,
+      barrierLabel: 'Category',
+      barrierDismissible: true,
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 240),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Align(
+          alignment: Alignment.centerRight,
+          child: Material(
+            color: Colors.white,
+            child: SafeArea(
+              left: false,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.78,
+                child: _CategorySelectSheet(
+                  categories: _categories,
+                  selected: _selectedCategory,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final offsetAnimation = Tween<Offset>(
+          begin: const Offset(1, 0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
+        return SlideTransition(position: offsetAnimation, child: child);
+      },
+    );
+
+    if (selected != null && selected != _selectedCategory) {
+      setState(() => _selectedCategory = selected);
+    }
+  }
 }
 
 
