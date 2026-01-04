@@ -25,25 +25,36 @@ class _CreateMemoBottomSheetState extends State<CreateMemoBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final sheetHeight = MediaQuery.of(context).size.height * 0.62;
+    final sheetHeight = MediaQuery.of(context).size.height * 0.9;
+    final theme = Theme.of(context);
+
 
     return SafeArea(
-      top: false,
+      // top: false,
+
       child: Padding(
         padding: EdgeInsets.only(bottom: bottomInset),
         child: ClipRRect(
+
           borderRadius: const BorderRadius.vertical(
             top: Radius.circular(20),
           ),
+
+
           child: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFF2F2F6),
+
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryContainer,
             ),
+
+
             child: SizedBox(
               height: sheetHeight,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+
+                  /// ヘッダー
                   _SheetHeader(
                     leadingLabel:
                         _sheetMode == _SheetMode.memo ? 'Cancel' : 'Back',
@@ -58,9 +69,14 @@ class _CreateMemoBottomSheetState extends State<CreateMemoBottomSheet> {
                         ? _onAdd
                         : null,
                   ),
+
+                  /// ボディ
                   Expanded(
                     child: Align(
                       alignment: Alignment.topCenter,
+
+                      /// 新規メモ_メイン　と　新規メモ_カテゴリ選択　を切り替える
+
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 220),
                         switchInCurve: Curves.easeOut,
@@ -78,6 +94,8 @@ class _CreateMemoBottomSheetState extends State<CreateMemoBottomSheet> {
                             ),
                           );
                         },
+
+                        // 切り替えシート内容
                         child: _sheetMode == _SheetMode.memo
                             ? _MemoSheetContent(
                                 key: const ValueKey('memo'),
