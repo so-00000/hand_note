@@ -31,68 +31,74 @@ class _CreateMemoBottomSheetState extends State<CreateMemoBottomSheet> {
       top: false,
       child: Padding(
         padding: EdgeInsets.only(bottom: bottomInset),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFFF2F2F6),
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(20),
-            ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(20),
           ),
-          child: SizedBox(
-            height: sheetHeight,
-            child: Column(
-              children: [
-                _SheetHeader(
-                  leadingLabel:
-                      _sheetMode == _SheetMode.memo ? 'Cancel' : 'Back',
-                  onLeadingTap: _sheetMode == _SheetMode.memo
-                      ? () => Navigator.pop(context)
-                      : _showMemoSheet,
-                  title:
-                      _sheetMode == _SheetMode.memo ? '新規メモ' : 'カテゴリ',
-                  trailingLabel: _sheetMode == _SheetMode.memo ? 'Add' : null,
-                  onTrailingTap: _sheetMode == _SheetMode.memo &&
-                          _memoController.text.isNotEmpty
-                      ? _onAdd
-                      : null,
-                ),
-                Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 220),
-                    switchInCurve: Curves.easeOut,
-                    switchOutCurve: Curves.easeIn,
-                    transitionBuilder: (child, animation) {
-                      final offsetAnimation = Tween<Offset>(
-                        begin: const Offset(0.1, 0),
-                        end: Offset.zero,
-                      ).animate(animation);
-                      return SlideTransition(
-                        position: offsetAnimation,
-                        child: FadeTransition(
-                          opacity: animation,
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: _sheetMode == _SheetMode.memo
-                        ? _MemoSheetContent(
-                            key: const ValueKey('memo'),
-                            memoController: _memoController,
-                            repeatEnabled: _repeatEnabled,
-                            onRepeatChanged: (v) =>
-                                setState(() => _repeatEnabled = v),
-                            category: _selectedCategory,
-                            onCategoryTap: _showCategorySheet,
-                          )
-                        : _CategorySheetContent(
-                            key: const ValueKey('category'),
-                            categories: _categories,
-                            selectedCategory: _selectedCategory,
-                            onSelect: _selectCategory,
-                          ),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFFF2F2F6),
+            ),
+            child: SizedBox(
+              height: sheetHeight,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _SheetHeader(
+                    leadingLabel:
+                        _sheetMode == _SheetMode.memo ? 'Cancel' : 'Back',
+                    onLeadingTap: _sheetMode == _SheetMode.memo
+                        ? () => Navigator.pop(context)
+                        : _showMemoSheet,
+                    title:
+                        _sheetMode == _SheetMode.memo ? '新規メモ' : 'カテゴリ',
+                    trailingLabel: _sheetMode == _SheetMode.memo ? 'Add' : null,
+                    onTrailingTap: _sheetMode == _SheetMode.memo &&
+                            _memoController.text.isNotEmpty
+                        ? _onAdd
+                        : null,
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        switchInCurve: Curves.easeOut,
+                        switchOutCurve: Curves.easeIn,
+                        transitionBuilder: (child, animation) {
+                          final offsetAnimation = Tween<Offset>(
+                            begin: const Offset(0.1, 0),
+                            end: Offset.zero,
+                          ).animate(animation);
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: _sheetMode == _SheetMode.memo
+                            ? _MemoSheetContent(
+                                key: const ValueKey('memo'),
+                                memoController: _memoController,
+                                repeatEnabled: _repeatEnabled,
+                                onRepeatChanged: (v) =>
+                                    setState(() => _repeatEnabled = v),
+                                category: _selectedCategory,
+                                onCategoryTap: _showCategorySheet,
+                              )
+                            : _CategorySheetContent(
+                                key: const ValueKey('category'),
+                                categories: _categories,
+                                selectedCategory: _selectedCategory,
+                                onSelect: _selectCategory,
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
